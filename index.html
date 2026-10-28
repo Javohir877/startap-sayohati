@@ -29,6 +29,16 @@ header{background:var(--card);border-bottom:1px solid var(--line);padding:12px 1
 .chip{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:4px 10px;font-size:13px;white-space:nowrap}
 .chip b{font-variant-numeric:tabular-nums}
 .hbtns{display:flex;gap:6px}
+.teams{max-width:1100px;margin:10px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.teams:empty{display:none}
+@media (max-width:640px){.teams{grid-template-columns:1fr}}
+.team{border:2px solid var(--line);border-radius:12px;padding:6px 12px;background:var(--bg);opacity:.75;transition:all .2s;min-width:0}
+.team .tn{font-weight:700;display:flex;align-items:center;gap:6px}
+.team .tn i{width:12px;height:12px;border-radius:50%;flex:none}
+.team .tm{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team .ts{font-size:12px;margin-top:2px;font-variant-numeric:tabular-nums}
+.team.now{opacity:1;background:var(--card);box-shadow:var(--shadow)}
+.team.now .tn::after{content:"● navbatda";font-size:11px;font-weight:600;margin-left:auto;color:var(--good)}
 main{max-width:1100px;margin:0 auto;padding:16px;display:grid;grid-template-columns:1fr 320px;gap:16px}
 @media (max-width:860px){main{grid-template-columns:1fr}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
@@ -76,8 +86,21 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
 th{color:var(--muted);font-size:12px;text-transform:uppercase}
 .tablewrap{overflow-x:auto}
-input[type=text]{font:inherit;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);min-width:220px}
+input[type=text]{font:inherit;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.setup{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:16px}
+.setup .g{border:2px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:8px}
+.setup .g b{display:flex;align-items:center;gap:6px}
+.setup .g b i{width:12px;height:12px;border-radius:50%}
+.setup label{font-size:12px;color:var(--muted)}
+.tdot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.turn{border-left:6px solid;padding-left:16px}
 .big{font-size:34px;font-weight:800;color:var(--accent)}
+.podium{display:grid;gap:10px;margin:16px 0}
+.podium .p{display:flex;align-items:center;gap:14px;border:2px solid var(--line);border-radius:12px;padding:12px 16px}
+.podium .p .m{font-size:30px}
+.podium .p .pn{font-weight:700;font-size:18px}
+.podium .p .pv{margin-left:auto;text-align:right;font-weight:800;font-size:20px}
+.podium .p.win{border-color:var(--good);background:var(--good-soft)}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;padding:30px 16px;overflow-y:auto;z-index:20}
 .modal.open{display:flex}
 .modal .card{max-width:820px;width:100%}
@@ -85,6 +108,19 @@ input[type=text]{font:inherit;padding:9px 12px;border-radius:10px;border:1px sol
 .road{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:16px 0}
 .road div{background:var(--bg);border-radius:10px;padding:10px;font-size:13px;border-top:4px solid var(--accent)}
 .road b{display:block;font-size:15px}
+.flip{width:230px;height:280px;margin:18px auto;perspective:900px;cursor:pointer}
+.fin{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
+.flip.on .fin{transform:rotateY(180deg)}
+.flip:not(.on):hover .fin{transform:rotateY(12deg) scale(1.03)}
+.ff,.fb{position:absolute;inset:0;border-radius:16px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:18px;text-align:center;box-shadow:var(--shadow)}
+.ff{background:linear-gradient(135deg,var(--accent),#ec4899);color:#fff;font-size:80px;font-weight:800}
+.ff small{font-size:14px;font-weight:600;opacity:.9}
+.fb{transform:rotateY(180deg);border:2px solid var(--line)}
+.fb b{font-size:17px} .fb span{font-size:14px;color:var(--muted)}
+.timer{height:8px;border-radius:99px;background:var(--bg);overflow:hidden;margin:10px 0 4px}
+.timer div{height:100%;background:var(--good);transition:width 1s linear,background .3s}
+.tleft{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
 .fade{animation:f .3s ease}
 @keyframes f{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 </style>
@@ -97,8 +133,10 @@ input[type=text]{font:inherit;padding:9px 12px;border-radius:10px;border:1px sol
     <div class="hbtns">
       <button class="btn ghost sm" onclick="openModal('mRoad')">📋 Bosqichlar</button>
       <button class="btn ghost sm" onclick="openModal('mGloss')">📖 Lugʻat</button>
+      <button class="btn ghost sm" id="snd" onclick="toggleSound()" title="Ovoz">🔊</button>
     </div>
   </div>
+  <div class="teams" id="teams"></div>
 </header>
 
 <main>
@@ -118,8 +156,9 @@ input[type=text]{font:inherit;padding:9px 12px;border-radius:10px;border:1px sol
 
 <script>
 /* ===================== MA'LUMOTLAR ===================== */
+const TEAM_COLORS = ["#4f46e5","#e11d48","#059669"];
 const COLORS = {
-  "Siz (asoschi)":"#4f46e5","Hammuassis":"#0ea5e9","FFF":"#f59e0b","Akselerator":"#f97316",
+  "Asoschilar":"#4f46e5","Hammuassis":"#0ea5e9","FFF":"#f59e0b","Akselerator":"#f97316",
   "Biznes-farishtalar":"#eab308","Seed fond":"#84cc16","Opsion puli (ESOP)":"#a855f7",
   "Series A investor":"#10b981","Series B investor":"#14b8a6","Series C investor":"#06b6d4","Koʻprik investor":"#ef4444"
 };
@@ -143,12 +182,15 @@ const GLOSSARY = [
   ["Burn rate","Kompaniya oyiga qancha pul sarflashi."],
   ["Runway","Mavjud pul bilan kompaniya necha oy yashay olishi: Kassa ÷ Burn rate."],
   ["Product-Market Fit (PMF)","Mahsulot bozorning haqiqiy ehtiyojini qondirib, mijozlar uni oʻzi izlab kelayotgan holat."],
+  ["Pivot","Bozordan olingan saboqlar asosida mahsulot yoki strategiya yoʻnalishini oʻzgartirish."],
+  ["LTV / CAC","Mijozdan butun davr davomida olinadigan foyda (LTV) va uni jalb qilish xarajati (CAC) nisbati. ≥ 3 — yaxshi."],
   ["Up round / Down round","Yangi raunddagi baholash oldingisidan yuqori (up) yoki past (down) boʻlishi."],
   ["Koʻprik raund (Bridge)","Pul tugab qolganda keyingi raundgacha 'koʻprik' boʻluvchi, odatda noqulay shartli mablagʻ."],
   ["CVC","Corporate Venture Capital — yirik korporatsiyalarning venchur boʻlinmasi (strategik investor)."],
   ["Unicorn (Yagona shox)","1 mlrd dollardan yuqori baholangan xususiy startap."],
   ["Exit","Investorlar va asoschilar ulushini pulga aylantirishi: IPO yoki M&A (sotib olinish)."],
   ["IPO","Initial Public Offering — aksiyalarni birinchi marta birjada ommaga sotish."],
+  ["Lock-up","IPO'dan keyin asoschi va investorlar aksiyani sota olmaydigan davr (odatda 6 oy)."],
   ["M&A","Mergers & Acquisitions — kompaniyani boshqa kompaniya sotib olishi yoki qoʻshilishi."],
   ["GP / LP","General Partner — fondni boshqaruvchi; Limited Partner — fondga pul qoʻyuvchi (pensiya fondlari, oilaviy ofislar)."],
   ["2 and 20","VC fondlarning odatiy haqi: yiliga 2% boshqaruv haqi va foydaning 20% (carry)."],
@@ -164,31 +206,39 @@ const ROAD = [
   ["Exit","—","Birja (IPO) yoki xaridor kompaniya (M&A)","Investorlar va asoschilar daromadni oladi","—"]
 ];
 
-/* Bosqichlar (o'yin ssenariysi) */
+/* Bosqichlar (o'yin ssenariysi). Har bir bosqichda har bir guruhga alohida savol. */
 const STAGES = [
 {
   key:"Pre-seed", title:"Gʻoya va ilk mablagʻ", icon:"💡", burn:0.05,
-  intro:"Siz zoʻr gʻoya topdingiz: Oʻzbekistondagi kichik doʻkonlar uchun onlayn buyurtma va yetkazib berish platformasi. Hozircha bor-yoʻgʻi $20 ming jamgʻarmangiz va noutbukingiz bor.",
+  intro:"Har bir guruh — alohida startap jamoasi. Gʻoya: Oʻzbekistondagi kichik doʻkonlar uchun onlayn buyurtma va yetkazib berish platformasi. Hozircha har bir jamoada bor-yoʻgʻi $20 ming jamgʻarma va noutbuk bor.",
   info:{"Mablagʻ hajmi":"$10 ming – $500 ming","Kimlar beradi":"Asoschining oʻzi, FFF, akseleratorlar, biznes-farishtalar","Instrumentlar":"Oddiy ulush, SAFE, konvertatsiyalanuvchi qarz","Investor nimaga qaraydi":"Jamoa, gʻoya, bozor hajmi"},
   event:{
     q:"Mahsulotni yaratish uchun dasturchi kerak. Nima qilasiz?",
     opts:[
-      {t:"Texnik hammuassis topaman", d:"Kuchli dasturchi doʻstingiz 30% ulush evaziga jamoaga qoʻshiladi.", fx:{trac:15, holder:["Hammuassis",30]},
+      {t:"Texnik hammuassis topamiz", d:"Kuchli dasturchi 30% ulush evaziga jamoaga qoʻshiladi.", fx:{trac:15, holder:["Hammuassis",30]},
        fb:"Investorlar kuchli jamoani juda qadrlaydi. Ulushingiz kamaydi, lekin kompaniyaning muvaffaqiyat ehtimoli ancha oshdi. Ulushni vesting (4 yil, 1 yil cliff) bilan berish odatiy amaliyot."},
       {t:"Frilanserga pul toʻlab MVP yaratamiz", d:"$15 ming sarflanadi, ulush saqlanadi.", fx:{trac:5, cash:-0.015},
        fb:"Tezkor yechim, lekin frilanser ketgach mahsulotni rivojlantirish qiyin. Investorlar 'texnik asoschi yoʻq' degan xavfni koʻradi."},
-      {t:"Oʻzim dasturlashni oʻrganaman", d:"Bepul, lekin sekin. 100% ulush sizda qoladi.", fx:{trac:-5},
+      {t:"Oʻzimiz dasturlashni oʻrganamiz", d:"Bepul, lekin sekin. 100% ulush jamoada qoladi.", fx:{trac:-5},
        fb:"Ulush saqlandi, ammo vaqt — startapning eng qimmat resursi. Raqobatchilar oldinga oʻtib ketishi mumkin."}
     ]
   },
   offers:[
-    {name:"FFF raund", holder:"FFF", amount:0.05, fixedPct:10, d:"Amakingiz va 2 doʻstingiz $50 ming beradi, evaziga 10% ulush.", tags:["Tez va oson","Munosabatlar xavfi"]},
+    {name:"FFF raund", holder:"FFF", amount:0.05, fixedPct:10, d:"Qarindoshlar va doʻstlar $50 ming beradi, evaziga 10% ulush.", tags:["Tez va oson","Munosabatlar xavfi"]},
     {name:"Akseleratorga kirish", holder:"Akselerator", amount:0.15, fixedPct:7, trac:10, minTrac:45, d:"$150 ming, 7% ulush + 3 oylik mentorlik va Demo Day.", tags:["Mentorlik","Tarmoq (network)"]},
     {name:"Bootstrapping", holder:null, amount:0, d:"Tashqi pul olmaysiz. Xarajatni minimal qilib, ilk daromad hisobiga yashaysiz.", tags:["100% nazorat","Sekin oʻsish"], burnOverride:0.008, trac:-5}
   ],
-  quiz:{q:"Startap dunyosidagi 'FFF' qisqartmasi nimani anglatadi?",
-    opts:["Fast Funding Fund — tezkor fond","Friends, Family, Fools — doʻstlar, oila va 'telbalar'","Final Financing Form — yakuniy hujjat","Founder Fixed Fee — asoschi haqi"], a:1,
-    ex:"FFF — sizga shaxsan ishonib, eng birinchi pul beradigan odamlar. Ular koʻpincha biznesni emas, sizni moliyalashtiradi."}
+  quizzes:[
+    {q:"Startap dunyosidagi 'FFF' qisqartmasi nimani anglatadi?",
+     opts:["Fast Funding Fund — tezkor fond","Friends, Family, Fools — doʻstlar, oila va 'telbalar'","Final Financing Form — yakuniy hujjat","Founder Fixed Fee — asoschi haqi"], a:1,
+     ex:"FFF — sizga shaxsan ishonib, eng birinchi pul beradigan odamlar. Ular koʻpincha biznesni emas, sizni moliyalashtiradi."},
+    {q:"'Bootstrapping' nima?",
+     opts:["Faqat oʻz mablagʻi va daromad hisobiga, tashqi investitsiyasiz rivojlanish","Bankdan katta kredit olish","Akseleratorga kirish","Kompaniyani birinchi yilda sotish"], a:0,
+     ex:"Bootstrapping nazoratni toʻliq saqlaydi, lekin oʻsish sekinroq boʻladi. Mailchimp va Zoho shunday oʻsgan mashhur misollar."},
+    {q:"Akseleratorlar startapga odatda nima beradi?",
+     opts:["Faqat bepul ofis","Kichik investitsiya, mentorlik va tarmoq — ulush evaziga","Ulushsiz, foizsiz kredit","Davlat litsenziyasi"], a:1,
+     ex:"Y Combinator, Techstars kabi akseleratorlar 3 oylik dastur oxirida 'Demo Day' oʻtkazadi — u yerda startaplar investorlar oldida chiqish qiladi."}
+  ]
 },
 {
   key:"Seed", title:"Urugʻ (Seed) raund", icon:"🌱", burn:0.8,
@@ -197,11 +247,11 @@ const STAGES = [
   event:{
     q:"Mahsulotni qanday rivojlantirasiz?",
     opts:[
-      {t:"Tezda MVP chiqarib, fikr yigʻaman", d:"Kamchiliklari bor, lekin haqiqiy mijozlar ishlatadi.", fx:{trac:15},
+      {t:"Tezda MVP chiqarib, fikr yigʻamiz", d:"Kamchiliklari bor, lekin haqiqiy mijozlar ishlatadi.", fx:{trac:15},
        fb:"'Lean Startup' yondashuvi: Qur → Oʻlcha → Oʻrgan. Tez fikr olish — PMF ga eng qisqa yoʻl."},
-      {t:"1 yil mukammal mahsulot ustida ishlayman", d:"Bozorga chiqmasdan, hamma narsani ideal qilaman.", fx:{trac:-10, cash:-0.03},
+      {t:"1 yil mukammal mahsulot ustida ishlaymiz", d:"Bozorga chiqmasdan, hamma narsani ideal qilamiz.", fx:{trac:-10, cash:-0.03},
        fb:"Xato! Startaplarning ~35% i 'bozorga keraksiz mahsulot' sabab yopiladi. Mijoz fikrisiz 'mukammal' mahsulot koʻpincha hech kimga kerak boʻlmaydi."},
-      {t:"100 ta mijoz bilan suhbat, keyin pivot", d:"Muammoni chuqur oʻrganib, yoʻnalishni oʻzgartirasiz.", fx:{trac:8, rnd:[0,12]},
+      {t:"100 ta mijoz bilan suhbat, keyin pivot", d:"Muammoni chuqur oʻrganib, yoʻnalishni oʻzgartiramiz.", fx:{trac:8, rnd:[0,12]},
        fb:"Pivot — strategiyani oʻzgartirish. Slack, Instagram, YouTube ham pivot natijasida paydo boʻlgan."}
     ]
   },
@@ -210,9 +260,17 @@ const STAGES = [
     {name:"Seed fond", holder:"Seed fond", amount:1.5, pre:5.5, d:"Ixtisoslashgan seed fond $1.5 mln, standart shartlar (1x imtiyoz).", tags:["Standart shartlar","Keyingi raundga yordam"]},
     {name:"'Saxiy' investor", holder:"Seed fond", amount:2.5, pre:10, pref:2, trac:-5, d:"Juda yuqori baholash! Lekin 2x liquidation preference va direktorlar kengashida 2 ta oʻrin talab qiladi.", tags:["Yuqori baholash","2x imtiyoz","Nazoratni yoʻqotish"]}
   ],
-  quiz:{q:"SAFE nima?",
-    opts:["Bank krediti turi","Davlat granti","Kelgusida ulushga aylanadigan oddiy investitsiya kelishuvi","Startapni sugʻurtalash shartnomasi"], a:2,
-    ex:"SAFE (Simple Agreement for Future Equity) — Y Combinator 2013-yilda yaratgan. Baholashni keyingi raundga qoldirib, tez va arzon pul jalb qilish imkonini beradi."}
+  quizzes:[
+    {q:"SAFE nima?",
+     opts:["Bank krediti turi","Davlat granti","Kelgusida ulushga aylanadigan oddiy investitsiya kelishuvi","Startapni sugʻurtalash shartnomasi"], a:2,
+     ex:"SAFE (Simple Agreement for Future Equity) — Y Combinator 2013-yilda yaratgan. Baholashni keyingi raundga qoldirib, tez va arzon pul jalb qilish imkonini beradi."},
+    {q:"PMF (Product-Market Fit) nimani anglatadi?",
+     opts:["Mahsulot narxi bozordagi eng past","Mahsulot bozor ehtiyojini qondirib, mijozlar uni oʻzi izlab keladi","Mahsulot patentlangan","Mahsulot barcha davlatlarda sotiladi"], a:1,
+     ex:"Marc Andreessen: 'PMF — yaxshi bozorda, shu bozorni qoniqtira oladigan mahsulotga ega boʻlish'. Seed bosqichining asosiy maqsadi — PMF ni topish."},
+    {q:"Startapda 'pivot' nima?",
+     opts:["Kompaniyani yopish","Investorni almashtirish","Bozordan olingan saboqlar asosida mahsulot yoki strategiya yoʻnalishini oʻzgartirish","Mahsulot narxini oshirish"], a:2,
+     ex:"Instagram dastlab 'Burbn' nomli joylashuv ilovasi edi. Foydalanuvchilar faqat rasm funksiyasini yoqtirgani uchun jamoa pivot qildi."}
+  ]
 },
 {
   key:"Series A", title:"A raund — Kengayish", icon:"📈", burn:6, esop:10,
@@ -234,13 +292,21 @@ const STAGES = [
     {name:"Korporativ venchur (CVC)", holder:"Series A investor", amount:6, pre:17, trac:10, d:"Yirik telekom kompaniyasi: $6 mln va oʻz mijoz bazasiga kirish imkoni.", tags:["Strategik hamkorlik","Pastroq baholash"]},
     {name:"Agressiv fond", holder:"Series A investor", amount:12, pre:38, pref:2, trac:-5, d:"$12 mln, juda yuqori baholash, lekin 2x participating imtiyoz.", tags:["Koʻp pul","2x imtiyoz"]}
   ],
-  quiz:{q:"Pre-money baholash $4 mln, investor $1 mln kiritdi. Investor ulushi qancha?",
-    opts:["25%","20%","10%","40%"], a:1,
-    ex:"Post-money = 4 + 1 = $5 mln. Investor ulushi = 1 ÷ 5 = 20%. Koʻp kishi xato qilib 1 ÷ 4 = 25% deb hisoblaydi!"}
+  quizzes:[
+    {q:"Pre-money baholash $4 mln, investor $1 mln kiritdi. Investor ulushi qancha?",
+     opts:["25%","20%","10%","40%"], a:1,
+     ex:"Post-money = 4 + 1 = $5 mln. Investor ulushi = 1 ÷ 5 = 20%. Koʻp kishi xato qilib 1 ÷ 4 = 25% deb hisoblaydi!"},
+    {q:"Pre-money baholash $9 mln, investor $3 mln kiritdi. Post-money baholash qancha?",
+     opts:["$9 mln","$6 mln","$12 mln","$27 mln"], a:2,
+     ex:"Post-money = Pre-money + Investitsiya = 9 + 3 = $12 mln. Investor ulushi esa 3 ÷ 12 = 25%."},
+    {q:"LTV/CAC koʻrsatkichi nimani oʻlchaydi?",
+     opts:["Mijozdan olinadigan umumiy foydaning uni jalb qilish xarajatiga nisbatini","Kompaniyaning qarzlarini","Xodimlar sonini","Aksiyalar narxini"], a:0,
+     ex:"LTV — mijozning 'umrbod qiymati', CAC — uni jalb qilish xarajati. LTV/CAC ≥ 3 boʻlsa, biznes modeli sogʻlom hisoblanadi."}
+  ]
 },
 {
   key:"Series B", title:"B raund — Bozorni egallash", icon:"🌍", burn:20,
-  intro:"Siz Oʻzbekistonda bozor yetakchisiga aylandingiz. Raqobatchilar ham pul jalb qilmoqda. Endi tezkor masshtablash kerak.",
+  intro:"Kompaniya Oʻzbekistonda bozor yetakchilaridan biriga aylandi. Raqobatchilar ham pul jalb qilmoqda. Endi tezkor masshtablash kerak.",
   info:{"Mablagʻ hajmi":"$10 mln – $60 mln","Kimlar beradi":"Growth fondlar, CVC, oldingi investorlar","Instrumentlar":"Series B imtiyozli aksiyalar","Investor nimaga qaraydi":"Barqaror daromad, bozor ulushi, jamoa boshqaruvi"},
   event:{
     q:"Qanday kengayasiz?",
@@ -258,13 +324,21 @@ const STAGES = [
     {name:"Strategik investor", holder:"Series B investor", amount:20, pre:60, trac:8, d:"Mintaqaviy bank: $20 mln + toʻlov infratuzilmasiga kirish.", tags:["Strategik foyda","Pastroq baholash"]},
     {name:"Mega-raund", holder:"Series B investor", amount:40, pre:140, pref:2, d:"$40 mln, katta baholash, lekin 2x imtiyoz va yillik daromad maqsadlari (bajarilmasa — jarima).", tags:["Koʻp pul","2x imtiyoz","Qattiq shartlar"]}
   ],
-  quiz:{q:"'2x liquidation preference' nimani anglatadi?",
-    opts:["Investor ovoz berishda 2 ta ovozga ega","Kompaniya sotilganda investor avval qoʻygan pulining 2 baravarini oladi","Investor 2 yildan keyin chiqib keta oladi","Investor ulushi 2 barobar oʻsadi"], a:1,
-    ex:"Masalan, investor $10 mln qoʻygan boʻlsa, sotilishda boshqalardan oldin $20 mln oladi. Exit kichik boʻlsa, asoschilarga deyarli hech narsa qolmasligi mumkin!"}
+  quizzes:[
+    {q:"'2x liquidation preference' nimani anglatadi?",
+     opts:["Investor ovoz berishda 2 ta ovozga ega","Kompaniya sotilganda investor avval qoʻygan pulining 2 baravarini oladi","Investor 2 yildan keyin chiqib keta oladi","Investor ulushi 2 barobar oʻsadi"], a:1,
+     ex:"Masalan, investor $10 mln qoʻygan boʻlsa, sotilishda boshqalardan oldin $20 mln oladi. Exit kichik boʻlsa, asoschilarga deyarli hech narsa qolmasligi mumkin!"},
+    {q:"ESOP (opsion puli) nima uchun kerak?",
+     opts:["Investorlarga dividend toʻlash uchun","Xodimlarni ulush bilan ragʻbatlantirish va jalb qilish uchun","Soliq toʻlash uchun","Bankdan kredit olish uchun"], a:1,
+     ex:"Startap katta maosh bera olmaydi, shuning uchun kuchli mutaxassislarga kelajakdagi ulush (opsion) taklif qiladi. Odatda kompaniyaning 10–20% i ajratiladi."},
+    {q:"CVC (korporativ venchur) investorining asosiy afzalligi nimada?",
+     opts:["Doimo eng yuqori baholash beradi","Hech qanday shart qoʻymaydi","Pul bilan birga strategik resurslar: mijozlar, infratuzilma, hamkorlik","Umuman ulush olmaydi"], a:2,
+     ex:"Masalan, Google Ventures, Intel Capital. Kamchiligi — korporatsiya raqobatchilaringiz bilan ishlashni cheklashi yoki keyin sizni arzon sotib olishga urinishi mumkin."}
+  ]
 },
 {
   key:"Series C", title:"C raund — Kech bosqich", icon:"🏙️", burn:45,
-  intro:"Kompaniyangiz yirik oʻyinchiga aylandi. Ammo global bozorda 'venchur qishi' boshlandi: investorlar ehtiyotkor, baholashlar tushmoqda.",
+  intro:"Kompaniya yirik oʻyinchiga aylandi. Ammo global bozorda 'venchur qishi' boshlandi: investorlar ehtiyotkor, baholashlar tushmoqda.",
   info:{"Mablagʻ hajmi":"$30 mln – $300 mln+","Kimlar beradi":"Kech bosqich fondlari, PE, xedj-fondlar, suveren fondlar","Instrumentlar":"Series C/D imtiyozli aksiyalar","Investor nimaga qaraydi":"Rentabellikka yoʻl, IPO/M&A salohiyati"},
   event:{
     q:"Bozor inqirozida nima qilasiz?",
@@ -282,25 +356,41 @@ const STAGES = [
     {name:"Xedj-fond (crossover)", holder:"Series C investor", amount:80, pre:350, pref:2, d:"$80 mln, eng yuqori baholash, lekin 2x imtiyoz.", tags:["Yuqori baholash","2x imtiyoz"]},
     {name:"Ehtiyotkor raund", holder:"Series C investor", amount:50, pre:170, trac:5, d:"$50 mln, pastroq baholash, lekin investorlar sabrli va yordam beradi.", tags:["Pastroq baholash","Uzoq muddatli hamkor"]}
   ],
-  quiz:{q:"'Down round' nima?",
-    opts:["Yangi raund baholashi oldingi raunddan past boʻlgani","Oxirgi moliyalashtirish raundi","Faqat qarz orqali moliyalashtirish","Investorlar pulni qaytarib olishi"], a:0,
-    ex:"Down round — kompaniya qiymati tushganini koʻrsatadi. Bu asoschilarni kuchli suyultiradi va xodimlar motivatsiyasini pasaytiradi."}
+  quizzes:[
+    {q:"'Down round' nima?",
+     opts:["Yangi raund baholashi oldingi raunddan past boʻlgani","Oxirgi moliyalashtirish raundi","Faqat qarz orqali moliyalashtirish","Investorlar pulni qaytarib olishi"], a:0,
+     ex:"Down round — kompaniya qiymati tushganini koʻrsatadi. Bu asoschilarni kuchli suyultiradi va xodimlar motivatsiyasini pasaytiradi."},
+    {q:"Burn rate oyiga $2 mln, kassada $30 mln bor. Runway qancha?",
+     opts:["6 oy","15 oy","30 oy","60 oy"], a:1,
+     ex:"Runway = Kassa ÷ Burn rate = 30 ÷ 2 = 15 oy. Yangi raundni yopish 6–9 oy olishi mumkin, shuning uchun kamida 18–24 oylik runway tavsiya etiladi."},
+    {q:"Startapda 'Default alive' nimani anglatadi?",
+     opts:["Kompaniya yangi investitsiyasiz ham, hozirgi pul bilan foydaga chiqa oladi","Kompaniya bankrot boʻldi","Asoschi kompaniyadan ketdi","Kompaniya birjada savdo qilinmoqda"], a:0,
+     ex:"Atama Paul Graham (Y Combinator) tomonidan ommalashtirilgan. 'Default dead' — yangi pul topilmasa, kompaniya yopiladi."}
+  ]
 },
 {
   key:"Exit", title:"Exit — Hosilni yigʻish", icon:"🏆", exit:true,
-  intro:"Yillar mehnati natija berdi! Endi investorlar oʻz daromadini kutmoqda. Ulushingizni pulga aylantirish yoʻlini tanlang.",
+  intro:"Yillar mehnati natija berdi! Endi investorlar oʻz daromadini kutmoqda. Har bir guruh ulushini pulga aylantirish yoʻlini tanlaydi.",
   info:{"IPO":"Aksiyalarni birjada sotish. Eng katta daromad, eng katta xavf.","M&A":"Yirik kompaniya sizni sotib oladi. Kafolatlangan narx.","Mustaqil qolish":"Kompaniyani boshqarishda davom etish, natija noaniq.","Muhim":"Imtiyozli investorlar (2x) avval oʻz pulini oladi!"},
-  quiz:{q:"'Unicorn' (yagona shox) deb qanday kompaniyaga aytiladi?",
-    opts:["Birinchi yilda foydaga chiqqan startap","Birjada savdo qilinadigan har qanday kompaniya","1 mlrd dollardan yuqori baholangan xususiy startap","Faqat bitta investorga ega startap"], a:2,
-    ex:"Atama 2013-yilda Aileen Lee tomonidan kiritilgan — oʻsha paytda bunday kompaniyalar juda kam boʻlgan. Mintaqamizda Kaspi.kz, Uzum kabi kompaniyalar bunga misol."}
+  quizzes:[
+    {q:"'Unicorn' (yagona shox) deb qanday kompaniyaga aytiladi?",
+     opts:["Birinchi yilda foydaga chiqqan startap","Birjada savdo qilinadigan har qanday kompaniya","1 mlrd dollardan yuqori baholangan xususiy startap","Faqat bitta investorga ega startap"], a:2,
+     ex:"Atama 2013-yilda Aileen Lee tomonidan kiritilgan — oʻsha paytda bunday kompaniyalar juda kam boʻlgan. Mintaqamizda Kaspi.kz, Uzum kabi kompaniyalar bunga misol."},
+    {q:"IPO'dan keyingi 'lock-up' davri nima?",
+     opts:["Birja yopiq boʻladigan kunlar","Asoschi va investorlar aksiyalarni maʼlum muddat (odatda 6 oy) sota olmaydigan davr","Kompaniya hisobotlarni yashiradigan davr","Soliq imtiyozi davri"], a:1,
+     ex:"Lock-up aksiya narxini barqaror ushlab turish uchun kerak: aks holda IPO kuni hamma birdan sotib, narxni qulatishi mumkin."},
+    {q:"VC fondlarining '2 and 20' modeli nimani anglatadi?",
+     opts:["2 yil investitsiya, 20 yil kutish","2 ta fond, 20 ta startap","Yiliga 2% boshqaruv haqi va foydaning 20% ulushi (carry)","2% ulush evaziga 20 mln investitsiya"], a:2,
+     ex:"Fond boshqaruvchisi (GP) LP'lar pulidan yiliga 2% haq oladi va fond foydasining 20% iga ega boʻladi. Shuning uchun VC'lar 'katta gʻalaba'ni qidiradi."}
+  ]
 }
 ];
 
 /* ===================== HOLAT ===================== */
-let S;
-function reset(name){
-  S = {name:name||"Oʻyinchi", stage:0, cash:0.02, trac:40, know:0, cap:{"Siz (asoschi)":100},
-       hist:[{label:"Start", cap:{"Siz (asoschi)":100}}], lastPost:0, prefExtra:0, burnAdj:0, raised:0, log:[]};
+let T = [], cur = 0, S = null;
+function newTeam(i,name,members){
+  return {i, name, members, color:TEAM_COLORS[i], stage:0, cash:0.02, trac:40, know:0, cap:{"Asoschilar":100},
+          hist:[{label:"Start", cap:{"Asoschilar":100}}], lastPost:0, prefExtra:0, burnAdj:0, raised:0, log:[], turn:{}};
 }
 
 /* ===================== YORDAMCHILAR ===================== */
@@ -317,12 +407,15 @@ const pct = x => (Math.round(x*10)/10).toFixed(1)+"%";
 const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
 const rnd = (a,b)=>a+Math.random()*(b-a);
 const mult = ()=>0.5+S.trac/100;
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const tname = t => `<span class="tdot" style="background:${t.color}"></span>${esc(t.name)}`;
 function dilute(holder,p){
   for (const k in S.cap) S.cap[k]*= (1-p/100);
   S.cap[holder]=(S.cap[holder]||0)+p;
 }
 function snap(label){ S.hist.push({label, cap:{...S.cap}}); }
-function me(){ return S.cap["Siz (asoschi)"]; }
+const own = t => t.cap["Asoschilar"];
+function me(){ return own(S); }
 function addTrac(x){ S.trac = clamp(S.trac + x, 5, 100); }
 
 function offerCalc(o){
@@ -333,65 +426,92 @@ function offerCalc(o){
 }
 
 /* ===================== RENDER ===================== */
+function renderTeams(){
+  $("teams").innerHTML = T.map((t,i)=>`<div class="team ${S&&i===cur?'now':''}" style="border-color:${S&&i===cur?t.color:'var(--line)'}">
+    <div class="tn"><i style="background:${t.color}"></i>${esc(t.name)}</div>
+    ${t.members?`<div class="tm" title="${esc(t.members)}">👥 ${esc(t.members)}</div>`:""}
+    <div class="ts">👤 ${pct(own(t))} · 🏷️ ${t.lastPost?money(t.lastPost):"—"} · 🎓 ${t.know}</div></div>`).join("");
+}
 function renderStats(){
   if(!S){ $("stats").innerHTML=""; return; }
   $("stats").innerHTML = `
+    <div class="chip" style="border-color:${S.color}">${tname(S)}</div>
     <div class="chip">💰 Kassa: <b>${money(S.cash)}</b></div>
     <div class="chip">🏷️ Baholash: <b>${S.lastPost?money(S.lastPost):"—"}</b></div>
-    <div class="chip">👤 Ulushingiz: <b>${pct(me())}</b></div>
+    <div class="chip">👤 Ulush: <b>${pct(me())}</b></div>
     <div class="chip">📊 Rivojlanish: <b>${Math.round(S.trac)}/100</b></div>
     <div class="chip">🎓 Bilim: <b>${S.know}/${STAGES.length}</b></div>`;
 }
 function capBar(cap){
   return `<div class="bar">${Object.entries(cap).filter(e=>e[1]>0.05).map(([k,v])=>`<div title="${k}: ${pct(v)}" style="width:${v}%;background:${COLORS[k]||'#888'}"></div>`).join("")}</div>`;
 }
+function scoreboard(){
+  return `<div class="card"><h3>🏁 Guruhlar reytingi</h3><div class="tablewrap"><table>
+    <tr><th>Guruh</th><th>Ulush</th><th>Baholash</th><th>🎓</th></tr>
+    ${T.map((t,i)=>`<tr style="${S&&i===cur?'font-weight:700':''}"><td>${tname(t)}</td><td>${pct(own(t))}</td><td>${t.lastPost?money(t.lastPost):"—"}</td><td>${t.know}</td></tr>`).join("")}
+  </table></div><p class="muted" style="font-size:12px;margin-bottom:0">Ulush qiymati = Ulush × Baholash. Gʻolib — exitda eng koʻp pul olgan guruh.</p></div>`;
+}
 function renderSide(){
   if(!S){ $("side").innerHTML = sideIntro(); return; }
   const legend = Object.entries(S.cap).sort((a,b)=>b[1]-a[1]).filter(e=>e[1]>0.05)
     .map(([k,v])=>`<div><i style="background:${COLORS[k]||'#888'}"></i><span>${k}</span><span>${pct(v)}</span></div>`).join("");
   const hist = S.hist.map(h=>`<div>${h.label}${capBar(h.cap)}</div>`).join("");
-  $("side").innerHTML = `
-    <div class="card"><h3>📑 Cap table (ulushlar jadvali)</h3>${capBar(S.cap)}<div class="legend">${legend}</div></div>
+  $("side").innerHTML = scoreboard() + `
+    <div class="card"><h3>📑 Cap table: ${tname(S)}</h3>${capBar(S.cap)}<div class="legend">${legend}</div></div>
     <div class="card"><h3>📉 Ulushlar tarixi</h3><div class="hist">${hist}</div>
-      <p class="muted" style="font-size:13px">Har bir raundda yangi aksiyalar chiqariladi — bu <b>suyultirish</b>. Ulush foizi kamayadi, lekin kompaniya qiymati oshsa, ulushingiz qiymati oʻsadi.</p></div>`;
+      <p class="muted" style="font-size:13px">Har bir raundda yangi aksiyalar chiqariladi — bu <b>suyultirish</b>. Ulush foizi kamayadi, lekin kompaniya qiymati oshsa, ulush qiymati oʻsadi.</p></div>`;
 }
 function sideIntro(){
-  const top = board().slice(0,5);
-  return `<div class="card"><h3>🏅 Eng yaxshi natijalar</h3>${top.length?`<table><tr><th>Ism</th><th>Daromad</th><th>🎓</th></tr>${top.map(r=>`<tr><td>${esc(r.name)}</td><td>${money(r.payout)}</td><td>${r.know}</td></tr>`).join("")}</table>`:`<p class="muted">Hali natijalar yoʻq. Birinchi boʻling!</p>`}</div>
-  <div class="card"><h3>🎯 Qoidalar</h3><p class="muted" style="font-size:14px">Har bosqichda: 1) bosqich haqida oʻqing, 2) strategik qaror qabul qiling, 3) investor taklifini tanlang, 4) bilim savoliga javob bering. Maqsad — exitda <b>imkon qadar koʻp pul</b> bilan chiqish.</p></div>`;
+  return `<div class="card"><h3>🎯 Qoidalar</h3><p class="muted" style="font-size:14px">Sinf 3 guruhga boʻlinadi. Har bosqichda guruhlar <b>navbatma-navbat</b>: 1) strategik qaror qabul qiladi, 2) 🎲 tasodif kartasini ochadi, 3) investor taklifini tanlaydi, 4) ⏱ 30 soniyada bilim savoliga javob beradi (har guruhga alohida savol). Bosqich oxirida natijalar solishtiriladi.</p>
+  <p class="muted" style="font-size:14px">Maqsad — exitda <b>eng koʻp pul</b> bilan chiqish. Qoʻshimcha mukofot — <b>eng bilimdon guruh</b>.</p></div>`;
 }
 function steps(){
   return `<div class="steps">${STAGES.map((s,i)=>`<div class="step ${i<S.stage?'done':i===S.stage?'now':''}">${s.icon} ${s.key}</div>`).join("")}</div>`;
 }
-function show(html){ const el=$("screen"); el.classList.remove("fade"); void el.offsetWidth; el.classList.add("fade"); el.innerHTML=html; renderStats(); renderSide(); window.scrollTo({top:0,behavior:"smooth"}); }
-const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function turnTag(label){ return `<span class="tag" style="background:${S.color};color:#fff">${esc(S.name)}</span> <span class="tag">${label}</span>`; }
+function show(html){ const el=$("screen"); el.classList.remove("fade"); void el.offsetWidth; el.classList.add("fade"); el.innerHTML=html; renderTeams(); renderStats(); renderSide(); window.scrollTo({top:0,behavior:"smooth"}); }
 
 /* ===================== EKRANLAR ===================== */
 function home(){
-  S=null;
-  show(`<span class="tag">Interaktiv taʼlim oʻyini</span>
+  S=null; T=[]; cur=0;
+  show(`<span class="tag">Interaktiv taʼlim oʻyini · 3 guruh</span>
     <h1>🚀 Startap Sayohati</h1>
-    <p>Siz — yosh asoschisiz. Gʻoyadan boshlab <b>Pre-seed → Seed → Series A → B → C → Exit</b> bosqichlaridan oʻtib, venchur kapital qanday ishlashini oʻz tajribangizda sinab koʻrasiz.</p>
+    <p>Har bir guruh — yosh startap jamoasi. Gʻoyadan boshlab <b>Pre-seed → Seed → Series A → B → C → Exit</b> bosqichlaridan oʻtib, venchur kapital qanday ishlashini sinab koʻrasiz. Kim eng foydali exitga erishadi?</p>
     <div class="road">${ROAD.map(r=>`<div><b>${r[0]}</b>${r[1]}</div>`).join("")}</div>
-    <p class="muted">Har bir qaroringiz kompaniya rivojlanishiga, baholashiga va ulushingizga ta'sir qiladi. Arzon pul olib koʻp ulush berasizmi yoki qimmat baholash evaziga ogʻir shartlarga rozi boʻlasizmi?</p>
-    <div class="row"><input type="text" id="pname" placeholder="Ismingiz yoki jamoa nomi" maxlength="24">
-      <button class="btn" onclick="start()">Oʻyinni boshlash ▶</button></div>`);
-  setTimeout(()=>{ const i=$("pname"); if(i) i.addEventListener("keydown",e=>{if(e.key==="Enter")start();}); },0);
+    <h3>👥 Guruhlarni kiriting</h3>
+    <div class="setup">${[0,1,2].map(i=>`<div class="g" style="border-color:${TEAM_COLORS[i]}">
+      <b><i style="background:${TEAM_COLORS[i]}"></i>${i+1}-guruh</b>
+      <label>Guruh nomi<input type="text" id="gn${i}" maxlength="24" placeholder="${["Lochinlar","Burgutlar","Shunqorlar"][i]}"></label>
+      <label>Aʼzolar (vergul bilan)<input type="text" id="gm${i}" maxlength="120" placeholder="Ali, Malika, Sardor"></label></div>`).join("")}</div>
+    <div class="row"><button class="btn" onclick="start()">Oʻyinni boshlash ▶</button></div>`);
 }
-function start(){ reset(($("pname").value||"").trim()); stageInfo(); }
+function start(){
+  const def=["Lochinlar","Burgutlar","Shunqorlar"];
+  T = [0,1,2].map(i=>newTeam(i, ($("gn"+i).value.trim()||def[i]), $("gm"+i).value.trim()));
+  cur=0; S=T[0]; stageInfo();
+}
 
 function stageInfo(){
   const st = STAGES[S.stage];
-  show(`${steps()}<span class="tag">${S.stage+1}-bosqich</span>
+  show(`${steps()}<span class="tag">${S.stage+1}-bosqich · barcha guruhlar uchun</span>
     <h2>${st.icon} ${st.key}: ${st.title}</h2>
     <p>${st.intro}</p>
     <div class="info">${Object.entries(st.info).map(([k,v])=>`<div><b>${k}</b>${v}</div>`).join("")}</div>
-    <div class="row"><button class="btn" onclick="${st.exit?'exitChoice()':'eventQ()'}">Davom etish →</button></div>`);
+    <div class="row"><button class="btn" onclick="turnStart()">Boshlash: ${esc(T[0].name)} →</button></div>`);
+}
+function turnStart(){
+  const st = STAGES[S.stage];
+  show(`${steps()}<div class="turn" style="border-color:${S.color}">
+    <span class="tag">${st.icon} ${st.key}</span>
+    <h1 style="margin-top:8px">🎯 Navbat: ${esc(S.name)}</h1>
+    ${S.members?`<p style="font-size:18px">👥 ${esc(S.members)}</p>`:""}
+    <p class="muted">Guruhning hozirgi holati: ulush ${pct(me())}, baholash ${S.lastPost?money(S.lastPost):"—"}, kassa ${money(S.cash)}, rivojlanish ${Math.round(S.trac)}/100.</p></div>
+    <div class="row"><button class="btn" style="background:${S.color};color:#fff" onclick="${st.exit?'exitChoice()':'eventQ()'}">Tayyormiz! ▶</button></div>`);
 }
 
 function eventQ(){
   const st = STAGES[S.stage];
-  show(`${steps()}<span class="tag">Strategik qaror</span><h2>🤔 ${st.event.q}</h2>
+  show(`${steps()}${turnTag("Strategik qaror")}<h2 style="margin-top:8px">🤔 ${st.event.q}</h2>
     <div class="opts">${st.event.opts.map((o,i)=>`<button class="opt" onclick="eventPick(${i})"><span class="t">${o.t}</span><span class="d">${o.d}</span></button>`).join("")}</div>`);
 }
 function eventPick(i){
@@ -400,14 +520,55 @@ function eventPick(i){
   addTrac(dt);
   if (fx.cash) S.cash += fx.cash;
   S.burnAdj = fx.burnAdj||0;
+  S.turn = {event:o.t, dt};
   let extra="";
   if (fx.holder){ dilute(fx.holder[0],fx.holder[1]); extra=`<br>👥 ${fx.holder[0]} ${fx.holder[1]}% ulush oldi.`; }
   if (fx.cash) extra += `<br>💸 Xarajat: ${money(-fx.cash)}`;
   if (S.burnAdj) extra += `<br>🔥 Bu bosqichdagi xarajat ${S.burnAdj>0?"+":""}${money(S.burnAdj)} ga oʻzgaradi.`;
-  show(`${steps()}<span class="tag">Natija</span><h2>${o.t}</h2>
+  show(`${steps()}${turnTag("Natija")}<h2 style="margin-top:8px">${o.t}</h2>
     <div class="box ${dt>=5?'good':dt<0?'bad':'warn'}"><b>Rivojlanish: ${dt>=0?"+":""}${dt}</b>${extra}</div>
     <p>${o.fb}</p>
-    <div class="row"><button class="btn" onclick="offers()">Investorlar bilan uchrashish →</button></div>`);
+    <div class="row"><button class="btn" onclick="luckCard()">🎲 Tasodif kartasini olish →</button></div>`);
+}
+
+/* ===================== TASODIF KARTASI ===================== */
+const LUCK = [
+  {e:"🎤", t:"Mashhur blogger ilovangizni maqtadi!", d:"Bir kunda 10 000 yangi foydalanuvchi.", trac:10},
+  {e:"🏅", t:"Startap tanlovida gʻolib boʻldingiz!", d:"Mukofot puli va OAV'da shuhrat.", trac:5, cashK:0.08},
+  {e:"🏛️", t:"Davlat granti!", d:"IT Park dasturi orqali grant olindi.", cashK:0.12},
+  {e:"🤝", t:"Yirik hamkorlik", d:"Mashhur supermarket tarmogʻi platformangizga ulandi.", trac:8},
+  {e:"📰", t:"Forbes'da maqola", d:"Investorlar sizni oʻzlari izlay boshladi.", trac:6},
+  {e:"💥", t:"Server qulab tushdi!", d:"Bayram kuni 6 soat ishlamadingiz. Mijozlar gʻazabda.", trac:-8},
+  {e:"🏃", t:"Bosh dasturchi raqobatchiga ketdi", d:"Yangi odam topish va oʻrgatish kerak.", trac:-6, cashK:-0.05},
+  {e:"⚖️", t:"Sud jarayoni", d:"Raqobatchi patent boʻyicha da'vo qildi. Advokatlarga pul ketdi.", cashK:-0.08},
+  {e:"🦠", t:"Bozorda kutilmagan inqiroz", d:"Doʻkonlar xarajatlarni qisqartirmoqda.", trac:-5},
+  {e:"🍀", t:"Hech narsa boʻlmadi", d:"Tinch oy. Jamoa ishda davom etmoqda.", trac:0},
+  {e:"🚀", t:"Mahsulot viral boʻldi!", d:"TikTok'dagi video 5 mln koʻrildi.", trac:12},
+  {e:"🕵️", t:"Maʼlumotlar sizib chiqdi", d:"Xavfsizlik teshigi topildi, jarima va obroʻ yoʻqotish.", trac:-7, cashK:-0.04}
+];
+function luckCard(){
+  show(`${steps()}${turnTag("🎲 Tasodif kartasi")}<h2 style="margin-top:8px">Startap hayoti kutilmagan voqealarga toʻla!</h2>
+    <p class="muted">Kartani bosib oching. Omad kulib boqadimi?</p>
+    <div class="flip" id="flip" onclick="flipCard()"><div class="fin"><div class="ff">❓<small>Bosing</small></div><div class="fb" id="fb"></div></div></div>
+    <div id="lres"></div>`);
+}
+function flipCard(){
+  const f=$("flip"); if (f.classList.contains("on")) return;
+  const c = LUCK[Math.floor(Math.random()*LUCK.length)];
+  const scale = Math.max(0.25, S.lastPost/3);           // pul effekti kompaniya hajmiga mos
+  let cash = c.cashK ? Math.round(c.cashK*scale*1000)/1000 : 0;
+  if (c.trac) addTrac(c.trac);
+  if (cash){ const was=S.cash; S.cash = Math.max(0, S.cash + cash); cash = S.cash - was; }
+  const good = (c.trac||0) + cash*10 > 0, bad = (c.trac||0) + cash*10 < 0;
+  $("fb").innerHTML = `<div style="font-size:54px">${c.e}</div><b>${c.t}</b><span>${c.d}</span>`;
+  $("fb").style.background = good?"var(--good-soft)":bad?"var(--bad-soft)":"var(--bg)";
+  f.classList.add("on"); sfx(good?"good":bad?"bad":"tick");
+  setTimeout(()=>{
+    if (!$("lres")) return;
+    $("lres").innerHTML = `<div class="box ${good?'good':bad?'bad':'warn'}">${c.trac?`📊 Rivojlanish: <b>${c.trac>0?"+":""}${c.trac}</b> `:""}${cash?` 💰 Kassa: <b>${cash>0?"+":""}${money(cash)}</b>`:""}${!c.trac&&!cash?"Oʻzgarish yoʻq.":""}</div>
+      <div class="row"><button class="btn" onclick="offers()">Investorlar bilan uchrashish →</button></div>`;
+    renderTeams(); renderStats();
+  }, 650);
 }
 
 function offers(){
@@ -423,7 +584,7 @@ function offers(){
       ${locked?`<span class="d" style="color:var(--bad)">🔒 Akselerator rad etdi: rivojlanish kamida ${o.minTrac} boʻlishi kerak (sizda ${Math.round(S.trac)}).</span>`:""}</button>`;
   }).join("");
   const burn = (st.burn + S.burnAdj);
-  show(`${steps()}<span class="tag">Term sheet</span><h2>💼 Investorlar takliflari</h2>
+  show(`${steps()}${turnTag("Term sheet")}<h2 style="margin-top:8px">💼 Investorlar takliflari</h2>
     <p class="muted">Baholash rivojlanish darajangizga bogʻliq (${Math.round(S.trac)}/100 → koeffitsiyent ×${mult().toFixed(2)}). Keyingi bosqichgacha taxminan <b>${money(burn)}</b> sarflanadi — pul yetmasa, noqulay koʻprik raund olishga majbur boʻlasiz.</p>
     <div class="opts">${list}</div>`);
 }
@@ -432,7 +593,7 @@ function takeOffer(i){
   const st = STAGES[S.stage], o = st.offers[i];
   const before = me(); let notes = [];
   if (st.esop){ dilute("Opsion puli (ESOP)", st.esop);
-    notes.push(`<div class="box note">🎁 <b>Opsion puli:</b> Investor xodimlar uchun ${st.esop}% ESOP yaratishni talab qildi. U investitsiyadan <i>oldin</i> (pre-money) yaratildi, shuning uchun faqat mavjud egalar suyultirildi. Ulushingiz: ${pct(before)} → ${pct(me())}</div>`); }
+    notes.push(`<div class="box note">🎁 <b>Opsion puli:</b> Investor xodimlar uchun ${st.esop}% ESOP yaratishni talab qildi. U investitsiyadan <i>oldin</i> (pre-money) yaratildi, shuning uchun faqat mavjud egalar suyultirildi. Ulush: ${pct(before)} → ${pct(me())}</div>`); }
   const mid = me(); const c = offerCalc(o);
   let math="";
   if (o.amount>0){
@@ -441,43 +602,77 @@ function takeOffer(i){
     if (o.pref>1) S.prefExtra += (o.pref-1)*o.amount;
     math = `<div class="math">Post-money = Pre-money + Investitsiya = ${money(c.pre)} + ${money(o.amount)} = <b>${money(c.post)}</b><br>
       Investor ulushi = ${money(o.amount)} ÷ ${money(c.post)} = <b>${pct(c.p)}</b><br>
-      Sizning ulushingiz = ${pct(mid)} × (1 − ${pct(c.p)}) = <b>${pct(me())}</b><br>
-      Ulushingiz qiymati = ${pct(me())} × ${money(c.post)} = <b>${money(me()/100*c.post)}</b></div>`;
+      Guruh ulushi = ${pct(mid)} × (1 − ${pct(c.p)}) = <b>${pct(me())}</b><br>
+      Ulush qiymati = ${pct(me())} × ${money(c.post)} = <b>${money(me()/100*c.post)}</b></div>`;
   } else {
-    math = `<div class="box good">Siz hech qanday ulush bermadingiz — 100% nazorat saqlanib qoldi. Lekin oʻsish sekinlashdi.</div>`;
+    math = `<div class="box good">Hech qanday ulush berilmadi — 100% nazorat saqlanib qoldi. Lekin oʻsish sekinlashdi.</div>`;
   }
   if (o.trac) addTrac(o.trac);
-  if (o.pref>1) notes.push(`<div class="box warn">⚠ <b>${o.pref}x imtiyoz:</b> Exitda bu investor boshqalardan oldin ${money(o.amount*o.pref)} oladi. Bu sizning yakuniy daromadingizni kamaytiradi.</div>`);
+  if (o.pref>1) notes.push(`<div class="box warn">⚠ <b>${o.pref}x imtiyoz:</b> Exitda bu investor boshqalardan oldin ${money(o.amount*o.pref)} oladi. Bu guruhning yakuniy daromadini kamaytiradi.</div>`);
   const burn = o.burnOverride ?? (st.burn + S.burnAdj);
   S.cash -= burn;
   notes.push(`<div class="box note">🔥 Keyingi bosqichgacha sarflandi: <b>${money(burn)}</b>. Kassada qoldi: <b>${money(Math.max(S.cash,0))}</b></div>`);
+  let bridge=false;
   if (S.cash < 0){
-    const short = -S.cash;
+    const short = -S.cash; bridge=true;
     dilute("Koʻprik investor", 8); addTrac(-5); S.cash = 0;
     notes.push(`<div class="box bad">🚨 <b>Pul tugadi!</b> ${money(short)} yetishmadi. Kompaniyani saqlab qolish uchun noqulay <b>koʻprik raund</b> olindi: 8% ulush berildi, rivojlanish −5. <br>Saboq: har doim kamida 18–24 oylik <i>runway</i> bilan pul jalb qiling.</div>`);
   }
-  if (S.lastPost >= 1000 && !S.unicorn){ S.unicorn=true; notes.push(`<div class="box good">🦄 <b>Tabriklaymiz!</b> Kompaniyangiz baholashi $1 mlrd dan oshdi — siz <b>unicorn</b>siz!</div>`); }
+  if (S.lastPost >= 1000 && !S.unicorn){ S.unicorn=true; notes.push(`<div class="box good">🦄 <b>Tabriklaymiz!</b> Kompaniya baholashi $1 mlrd dan oshdi — ${esc(S.name)} endi <b>unicorn</b>!</div>`); }
   snap(st.key);
+  S.turn.offer = o.name; S.turn.bridge = bridge;
   S.log.push({stage:st.key, offer:o.name, amount:o.amount, post:S.lastPost, me:me()});
-  show(`${steps()}<span class="tag">Raund yopildi</span><h2>✅ ${o.name}</h2>${math}${notes.join("")}
-    <div class="row"><button class="btn" onclick="quiz()">Bilim savoli →</button></div>`);
+  show(`${steps()}${turnTag("Raund yopildi")}<h2 style="margin-top:8px">✅ ${o.name}</h2>${math}${notes.join("")}
+    <div class="row"><button class="btn" onclick="quiz()">Bilim savoli (${QUIZ_SEC} soniya) →</button></div>`);
+  if (S.unicorn && !S.unicornShown){ S.unicornShown=true; confetti(); sfx("win"); } else sfx(bridge?"bad":"tick");
 }
 
+const QUIZ_SEC = 30; let qTimer = null;
 function quiz(){
-  const q = STAGES[S.stage].quiz;
-  show(`${steps()}<span class="tag">🎓 Bilim savoli</span><h2>${q.q}</h2>
+  const q = STAGES[S.stage].quizzes[cur];
+  show(`${steps()}${turnTag("🎓 Bilim savoli")}<h2 style="margin-top:8px">${q.q}</h2>
+    <div class="timer"><div id="tbar" style="width:100%"></div></div><div class="tleft" id="tleft">⏱ ${QUIZ_SEC} soniya</div>
     <div class="opts" id="qopts">${q.opts.map((o,i)=>`<button class="opt" onclick="answer(${i})"><span class="t">${String.fromCharCode(65+i)}) ${o}</span></button>`).join("")}</div><div id="qfb"></div>`);
+  let left = QUIZ_SEC; clearInterval(qTimer);
+  qTimer = setInterval(()=>{
+    left--; const b=$("tbar"); if(!b){ clearInterval(qTimer); return; }
+    b.style.width = (left/QUIZ_SEC*100)+"%";
+    b.style.background = left<=5?"var(--bad)":left<=12?"var(--warn)":"var(--good)";
+    $("tleft").textContent = `⏱ ${left} soniya`;
+    if (left<=5 && left>0) sfx("tick");
+    if (left<=0) answer(-1);
+  },1000);
 }
 function answer(i){
-  const q = STAGES[S.stage].quiz, ok = i===q.a;
+  clearInterval(qTimer);
+  const q = STAGES[S.stage].quizzes[cur], ok = i===q.a;
   if (ok) S.know++;
+  S.turn.quiz = ok; sfx(ok?"good":"bad");
+  if (i===-1) $("tleft").textContent = "⏰ Vaqt tugadi!";
   [...$("qopts").children].forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add("correct"); else if(j===i) b.classList.add("wrong"); });
-  const last = S.stage===STAGES.length-1;
-  $("qfb").innerHTML = `<div class="box ${ok?'good':'bad'}"><b>${ok?"✔ Toʻgʻri!":"✘ Notoʻgʻri."}</b> ${q.ex}</div>
-    <div class="row"><button class="btn" onclick="${last?'final()':'next()'}">${last?"Yakuniy natija 🏁":"Keyingi bosqich →"}</button></div>`;
-  renderStats();
+  const exit = STAGES[S.stage].exit;
+  const label = cur<T.length-1 ? `Navbat: ${esc(T[cur+1].name)} →` : exit ? "Yakuniy natijalar 🏁" : "Bosqich yakuni 📊";
+  $("qfb").innerHTML = `<div class="box ${ok?'good':'bad'}"><b>${ok?"✔ Toʻgʻri! +1 bilim":"✘ Notoʻgʻri."}</b> ${q.ex}</div>
+    <div class="row"><button class="btn" onclick="nextTurn()">${label}</button></div>`;
+  renderTeams(); renderStats(); renderSide();
 }
-function next(){ S.stage++; S.burnAdj=0; stageInfo(); }
+function nextTurn(){
+  if (cur < T.length-1){ cur++; S=T[cur]; turnStart(); return; }
+  if (STAGES[S.stage].exit) return final();
+  stageSummary();
+}
+function stageSummary(){
+  const st = STAGES[S.stage];
+  const rows = T.map(t=>`<tr><td>${tname(t)}</td><td>${t.turn.event||"—"}</td><td>${t.turn.offer||"—"}${t.turn.bridge?" <span style='color:var(--bad)'>+ koʻprik</span>":""}</td>
+    <td>${t.lastPost?money(t.lastPost):"—"}</td><td>${pct(own(t))}</td><td>${money(own(t)/100*t.lastPost)}</td><td>${t.turn.quiz?"✔":"✘"}</td></tr>`).join("");
+  const lead = [...T].sort((a,b)=>own(b)*b.lastPost-own(a)*a.lastPost)[0];
+  show(`${steps()}<span class="tag">${st.icon} ${st.key} yakunlandi</span><h2 style="margin-top:8px">📊 Bosqich natijalari</h2>
+    <div class="tablewrap"><table><tr><th>Guruh</th><th>Qaror</th><th>Investor</th><th>Baholash</th><th>Ulush</th><th>Ulush qiymati</th><th>Savol</th></tr>${rows}</table></div>
+    ${lead.lastPost?`<div class="box good">🥇 Hozircha yetakchi: <b>${tname(lead)}</b> — ulush qiymati ${money(own(lead)/100*lead.lastPost)}</div>`:""}
+    <p class="muted">Muhokama uchun: nega guruhlarning ulushi va baholashi farq qildi? Qaysi qaror eng toʻgʻri boʻldi?</p>
+    <div class="row"><button class="btn" onclick="nextStage()">Keyingi bosqich: ${STAGES[S.stage+1].key} →</button></div>`);
+}
+function nextStage(){ T.forEach(t=>{ t.stage++; t.burnAdj=0; t.turn={}; }); cur=0; S=T[0]; stageInfo(); }
 
 /* ===================== EXIT ===================== */
 function exitChoice(){
@@ -488,7 +683,7 @@ function exitChoice(){
     ipoFail: Math.round(clamp((60-t)/100,0.05,0.6)*100)
   };
   const E=S.exitOpts;
-  show(`${steps()}<span class="tag">Exit</span><h2>🏆 Qaysi yoʻl bilan chiqasiz?</h2>
+  show(`${steps()}${turnTag("Exit")}<h2 style="margin-top:8px">🏆 Qaysi yoʻl bilan chiqasiz?</h2>
     <p class="muted">Oxirgi baholash: <b>${money(S.lastPost)}</b>. Rivojlanish: ${Math.round(t)}/100. Investorlarning qoʻshimcha imtiyozlari: <b>${money(S.prefExtra)}</b> (ular birinchi toʻlanadi).</p>
     <div class="opts">
       <button class="opt" onclick="doExit('ipo')"><span class="t">🔔 IPO — birjaga chiqish</span><span class="d">Eng katta daromad imkoniyati, lekin bozor kayfiyatiga bogʻliq. Muvaffaqiyatsizlik ehtimoli: ${E.ipoFail}%.</span><span class="nums"><span>Kutilgan qiymat: ${money(E.ipoLo)} – ${money(E.ipoHi)}</span></span></button>
@@ -498,52 +693,85 @@ function exitChoice(){
 }
 function doExit(kind){
   const b=Math.max(S.lastPost,1), t=S.trac; let val, story;
-  if (kind==="ma"){ val=S.exitOpts.ma; story="Kompaniyangiz muvaffaqiyatli sotildi! Bitim 6 oylik due diligence'dan soʻng yopildi."; }
+  if (kind==="ma"){ val=S.exitOpts.ma; story="🤝 Kompaniya muvaffaqiyatli sotildi! Bitim 6 oylik due diligence'dan soʻng yopildi."; }
   else if (kind==="ipo"){
     if (Math.random()*100 < S.exitOpts.ipoFail){ val=Math.round(b*0.4); story="😬 IPO kuni bozor qulab tushdi. Aksiyalar kutilganidan ancha past narxda joylashtirildi."; }
-    else { val=Math.round(b*(0.5+t/50)*rnd(0.7,1.4)); story="🔔 Qoʻngʻiroq chalindi! Aksiyalaringiz birjada savdoga chiqdi. (Eslatma: haqiqiy IPO'da asoschilar odatda 6 oylik lock-up davrida aksiyani sota olmaydi.)"; }
+    else { val=Math.round(b*(0.5+t/50)*rnd(0.7,1.4)); story="🔔 Qoʻngʻiroq chalindi! Aksiyalar birjada savdoga chiqdi. (Haqiqiy IPO'da asoschilar odatda 6 oylik lock-up davrida aksiyani sota olmaydi.)"; }
   } else {
     const r=rnd(0.4,1.6); val=Math.round(b*(0.4+t/60)*r);
-    story = r>1.1 ? "📈 Kompaniya barqaror oʻsdi va qiymati sezilarli oshdi!" : r<0.8 ? "📉 Yangi raqobatchilar paydo boʻldi, qiymat pasaydi." : "Kompaniya oʻrtacha sur'atda rivojlandi.";
+    story = r>1.1 ? "📈 Kompaniya barqaror oʻsdi va qiymati sezilarli oshdi!" : r<0.8 ? "📉 Yangi raqobatchilar paydo boʻldi, qiymat pasaydi." : "🧭 Kompaniya oʻrtacha sur'atda rivojlandi.";
   }
-  S.exit={kind,val,story};
-  quiz();
+  const payout = own(S)/100*Math.max(0, val - S.prefExtra);
+  S.exit={kind,val,story,payout};
+  S.turn = {event:{ipo:"IPO",ma:"M&A",hold:"Mustaqil qolish"}[kind]};
+  show(`${steps()}${turnTag("Exit natijasi")}<h2 style="margin-top:8px">${story}</h2>
+    <div class="math">Exit qiymati: <b>${money(val)}</b><br>
+      Imtiyozli investorlarga avval: ${money(S.prefExtra)}<br>
+      Guruh daromadi = ${pct(own(S))} × (${money(val)} − ${money(S.prefExtra)}) = <b>${money(payout)}</b></div>
+    <div class="row"><button class="btn" onclick="quiz()">Oxirgi bilim savoli →</button></div>`);
 }
 
+function rankOf(p){
+  return p>=200?"🦄 Afsonaviy asoschilar":p>=50?"🚀 Seriyali tadbirkorlar":p>=10?"💼 Muvaffaqiyatli asoschilar":p>=1?"🌱 Tajribali asoschilar":"📚 Oʻrganuvchilar";
+}
 function final(){
-  const {val,story,kind} = S.exit;
-  const pool = Math.max(0, val - S.prefExtra);
-  const payout = me()/100*pool;
-  const rank = payout>=200?["🦄 Afsonaviy asoschi","Siz venchur dunyosining yulduzisiz!"]:payout>=50?["🚀 Seriyali tadbirkor","Ajoyib natija — investorlar navbatda turadi."]
-    :payout>=10?["💼 Muvaffaqiyatli asoschi","Yaxshi exit! Lekin ulushingizni yaxshiroq himoya qilish mumkin edi."]:payout>=1?["🌱 Tajribali asoschi","Millioner boʻldingiz, lekin koʻp narsani investorlarga berdingiz."]:["📚 Oʻrganuvchi","Bu safar omad kulib boqmadi. Xatolardan saboq olib, qaytadan urinib koʻring!"];
-  saveBoard({name:S.name, payout:Math.round(payout*100)/100, know:S.know, pct:me()});
-  const rows = S.log.map(l=>`<tr><td>${l.stage}</td><td>${l.offer}</td><td>${l.amount?money(l.amount):"—"}</td><td>${l.post?money(l.post):"—"}</td><td>${pct(l.me)}</td></tr>`).join("");
-  show(`<span class="tag">Oʻyin yakuni</span><h2>${rank[0]}</h2><p>${rank[1]}</p>
-    <div class="box note">${story}</div>
-    <div class="info">
-      <div><b>Exit qiymati</b>${money(val)}</div>
-      <div><b>Imtiyozlar (avval toʻlandi)</b>${money(S.prefExtra)}</div>
-      <div><b>Sizning ulushingiz</b>${pct(me())}</div>
-      <div><b>Jami jalb qilingan</b>${money(S.raised)}</div>
-      <div><b>Bilim</b>${S.know}/${STAGES.length} toʻgʻri javob</div>
-    </div>
-    <p class="muted">Sizning daromadingiz = ${pct(me())} × (${money(val)} − ${money(S.prefExtra)})</p>
-    <div class="big">${money(payout)}</div>
-    <h3 style="margin-top:20px">📜 Sizning moliyalashtirish yoʻlingiz</h3>
-    <div class="tablewrap"><table><tr><th>Bosqich</th><th>Investor</th><th>Summa</th><th>Post-money</th><th>Ulushingiz</th></tr>${rows}</table></div>
-    <h3 style="margin-top:20px">💡 Asosiy saboqlar</h3>
+  const order = [...T].sort((a,b)=>b.exit.payout-a.exit.payout);
+  const medals = ["🥇","🥈","🥉"];
+  const smart = Math.max(...T.map(t=>t.know));
+  const smartTeams = T.filter(t=>t.know===smart).map(t=>esc(t.name)).join(", ");
+  S=null; $("stats").innerHTML="";
+  const pod = order.map((t,i)=>`<div class="p ${i===0?'win':''}" style="border-left:6px solid ${t.color}">
+      <div class="m">${medals[i]}</div>
+      <div><div class="pn">${esc(t.name)}</div>${t.members?`<div class="muted" style="font-size:13px">👥 ${esc(t.members)}</div>`:""}
+        <div class="muted" style="font-size:13px">${rankOf(t.exit.payout)} · ${t.turn.event} · ulush ${pct(own(t))} · 🎓 ${t.know}/${STAGES.length}</div></div>
+      <div class="pv">${money(t.exit.payout)}<div class="muted" style="font-size:12px;font-weight:400">exit: ${money(t.exit.val)}</div></div></div>`).join("");
+  const journey = T.map(t=>`<h3 style="margin-top:18px">${tname(t)}</h3>${capBar(t.cap)}
+    <div class="tablewrap"><table><tr><th>Bosqich</th><th>Investor</th><th>Summa</th><th>Post-money</th><th>Ulush</th></tr>
+    ${t.log.map(l=>`<tr><td>${l.stage}</td><td>${l.offer}</td><td>${l.amount?money(l.amount):"—"}</td><td>${l.post?money(l.post):"—"}</td><td>${pct(l.me)}</td></tr>`).join("")}</table></div>`).join("");
+  show(`<span class="tag">Oʻyin yakuni</span><h1 style="margin-top:8px">🏆 Gʻolib: ${esc(order[0].name)}!</h1>
+    <div class="podium">${pod}</div>
+    <div class="box note">🎓 <b>Eng bilimdon guruh:</b> ${smartTeams} (${smart}/${STAGES.length} toʻgʻri javob)</div>
+    <p class="muted">Daromad = Guruh ulushi × (Exit qiymati − investorlarning qoʻshimcha imtiyozlari)</p>
+    <h2 style="margin-top:20px">📜 Guruhlarning moliyalashtirish yoʻli</h2>${journey}
+    <h2 style="margin-top:20px">💡 Asosiy saboqlar</h2>
     <ul>
-      <li>Har bir raund ulushingizni <b>suyultiradi</b> — lekin "katta pirogning kichik boʻlagi kichik pirogning katta boʻlagidan yaxshiroq".</li>
-      <li><b>Eng yuqori baholash har doim eng yaxshi taklif emas</b>: 2x imtiyoz, nazorat talablari exitda qimmatga tushadi.</li>
+      <li>Har bir raund ulushni <b>suyultiradi</b> — lekin "katta pirogning kichik boʻlagi kichik pirogning katta boʻlagidan yaxshiroq".</li>
+      <li><b>Eng yuqori baholash har doim eng yaxshi taklif emas</b>: 2x imtiyoz va nazorat talablari exitda qimmatga tushadi.</li>
       <li><b>Runway</b>ni nazorat qiling: pul tugasa, noqulay shartlarga rozi boʻlishga majbur boʻlasiz.</li>
       <li>Investorlar avvalo <b>jamoa</b> va <b>tez oʻrganish</b> qobiliyatiga pul tikadi.</li>
     </ul>
-    <div class="row"><button class="btn" onclick="home()">🔄 Qayta oʻynash</button><button class="btn ghost" onclick="openModal('mRoad')">📋 Bosqichlar jadvali</button></div>`);
+    <div class="row"><button class="btn" onclick="home()">🔄 Yangi oʻyin</button><button class="btn ghost" onclick="openModal('mRoad')">📋 Bosqichlar jadvali</button></div>`);
+  confetti(); sfx("win");
+  $("side").innerHTML = `<div class="card"><h3>🏁 Yakuniy reyting</h3><table>${order.map((t,i)=>`<tr><td>${medals[i]}</td><td>${tname(t)}</td><td><b>${money(t.exit.payout)}</b></td></tr>`).join("")}</table></div>`;
 }
 
-/* ===================== REYTING ===================== */
-function board(){ try{ return JSON.parse(localStorage.getItem("vc_board")||"[]"); }catch(e){ return []; } }
-function saveBoard(r){ try{ const b=board(); b.push(r); b.sort((x,y)=>y.payout-x.payout); localStorage.setItem("vc_board",JSON.stringify(b.slice(0,20))); }catch(e){} }
+/* ===================== OVOZ VA KONFETTI ===================== */
+let soundOn = true, actx = null;
+function toggleSound(){ soundOn=!soundOn; $("snd").textContent = soundOn?"🔊":"🔇"; }
+function sfx(kind){
+  if (!soundOn) return;
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const notes = {good:[523,659,784], bad:[300,220], tick:[880], win:[523,659,784,1047]}[kind]||[440];
+    notes.forEach((f,i)=>{
+      const o=actx.createOscillator(), g=actx.createGain(), t=actx.currentTime+i*0.11;
+      o.type = kind==="bad"?"sawtooth":"triangle"; o.frequency.value=f;
+      g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(kind==="tick"?0.05:0.15,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+0.25);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t+0.3);
+    });
+  }catch(e){}
+}
+function confetti(){
+  const c=document.createElement("canvas"); c.id="confetti"; document.body.appendChild(c);
+  const x=c.getContext("2d"); c.width=innerWidth; c.height=innerHeight;
+  const cols=["#4f46e5","#e11d48","#059669","#f59e0b","#0ea5e9","#a855f7"];
+  const ps=Array.from({length:180},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height,vx:rnd(-1.5,1.5),vy:rnd(2,5),r:rnd(0,6.28),vr:rnd(-.2,.2),s:rnd(6,11),c:cols[Math.floor(Math.random()*cols.length)]}));
+  let n=0; (function loop(){
+    x.clearRect(0,0,c.width,c.height);
+    ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore();});
+    if(++n<260) requestAnimationFrame(loop); else c.remove();
+  })();
+}
 
 /* ===================== MODALLAR ===================== */
 function openModal(id){ $(id).classList.add("open"); }
