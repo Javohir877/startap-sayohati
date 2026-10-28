@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Startap Sayohati</title>
+<style>
+:root{
+  --bg:#f5f6fa; --card:#ffffff; --ink:#1c2033; --muted:#5d6480; --line:#e2e5ef;
+  --accent:#4f46e5; --accent-ink:#ffffff; --accent-soft:#eceafd;
+  --good:#15803d; --good-soft:#e4f6ea; --bad:#b91c1c; --bad-soft:#fde8e8; --warn:#b45309; --warn-soft:#fef3e2;
+  --shadow:0 2px 10px rgba(20,25,60,.07);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#11131c; --card:#1b1e2b; --ink:#e8eaf3; --muted:#9aa1bd; --line:#2c3043;
+    --accent:#8b85ff; --accent-ink:#11131c; --accent-soft:#2a2850;
+    --good:#4ade80; --good-soft:#163222; --bad:#f87171; --bad-soft:#3a1a1d; --warn:#fbbf24; --warn-soft:#3a2d12;
+    --shadow:0 2px 10px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:12px 16px;position:sticky;top:0;z-index:5}
+.hwrap{max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.logo{font-weight:700;font-size:18px}
+.logo span{color:var(--accent)}
+.stats{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:4px 10px;font-size:13px;white-space:nowrap}
+.chip b{font-variant-numeric:tabular-nums}
+.hbtns{display:flex;gap:6px}
+main{max-width:1100px;margin:0 auto;padding:16px;display:grid;grid-template-columns:1fr 320px;gap:16px}
+@media (max-width:860px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+.side .card{margin-bottom:16px}
+h1{font-size:28px;margin:0 0 8px} h2{font-size:22px;margin:0 0 6px} h3{font-size:16px;margin:0 0 8px}
+p{margin:8px 0}
+.muted{color:var(--muted)}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.steps{display:flex;gap:4px;margin:0 0 16px;flex-wrap:wrap}
+.step{flex:1;min-width:70px;text-align:center;font-size:12px;padding:6px 4px;border-radius:8px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.step.done{background:var(--good-soft);color:var(--good);border-color:transparent}
+.step.now{background:var(--accent);color:var(--accent-ink);border-color:transparent;font-weight:700}
+.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:14px 0}
+.info div{background:var(--bg);border-radius:10px;padding:10px 12px;font-size:14px}
+.info div b{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:2px}
+.opts{display:grid;gap:10px;margin-top:14px}
+.opt{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:14px;color:var(--ink);font:inherit;cursor:pointer;transition:border-color .15s,transform .1s}
+.opt:hover{border-color:var(--accent);transform:translateY(-1px)}
+.opt .t{font-weight:700;display:block}
+.opt .d{font-size:14px;color:var(--muted);display:block;margin-top:2px}
+.opt .nums{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.opt .nums span{font-size:12px;background:var(--bg);border-radius:6px;padding:2px 8px}
+.opt .nums span.red{background:var(--bad-soft);color:var(--bad)}
+.opt .nums span.grn{background:var(--good-soft);color:var(--good)}
+.opt.correct{border-color:var(--good);background:var(--good-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default;transform:none}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:10px 18px;font:inherit;font-weight:600;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.sm{padding:5px 10px;font-size:13px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.box{border-radius:10px;padding:12px 14px;margin:12px 0;font-size:15px}
+.box.good{background:var(--good-soft)} .box.bad{background:var(--bad-soft)} .box.warn{background:var(--warn-soft)} .box.note{background:var(--accent-soft)}
+.math{font-family:Consolas,ui-monospace,monospace;font-size:14px;background:var(--bg);border-radius:10px;padding:12px;line-height:1.8;overflow-x:auto}
+.bar{display:flex;height:26px;border-radius:8px;overflow:hidden;background:var(--bg)}
+.bar div{height:100%;transition:width .5s}
+.legend{display:grid;gap:4px;margin-top:10px;font-size:13px}
+.legend div{display:flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;flex:none}
+.legend span:last-child{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:600}
+.hist{display:grid;gap:6px;font-size:12px}
+.hist .bar{height:16px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-size:12px;text-transform:uppercase}
+.tablewrap{overflow-x:auto}
+input[type=text]{font:inherit;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);min-width:220px}
+.big{font-size:34px;font-weight:800;color:var(--accent)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;padding:30px 16px;overflow-y:auto;z-index:20}
+.modal.open{display:flex}
+.modal .card{max-width:820px;width:100%}
+.gl dt{font-weight:700;margin-top:10px} .gl dd{margin:2px 0 0;color:var(--muted)}
+.road{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:16px 0}
+.road div{background:var(--bg);border-radius:10px;padding:10px;font-size:13px;border-top:4px solid var(--accent)}
+.road b{display:block;font-size:15px}
+.fade{animation:f .3s ease}
+@keyframes f{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <div class="logo">🚀 Startap <span>Sayohati</span></div>
+    <div class="stats" id="stats"></div>
+    <div class="hbtns">
+      <button class="btn ghost sm" onclick="openModal('mRoad')">📋 Bosqichlar</button>
+      <button class="btn ghost sm" onclick="openModal('mGloss')">📖 Lugʻat</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section><div class="card fade" id="screen"></div></section>
+  <aside class="side" id="side"></aside>
+</main>
+
+<div class="modal" id="mRoad" onclick="if(event.target===this)closeModal(this.id)"><div class="card">
+  <div class="row" style="margin:0;justify-content:space-between"><h2>Startapni moliyalashtirish bosqichlari</h2><button class="btn ghost sm" onclick="closeModal('mRoad')">✕</button></div>
+  <div id="roadTable"></div>
+</div></div>
+
+<div class="modal" id="mGloss" onclick="if(event.target===this)closeModal(this.id)"><div class="card">
+  <div class="row" style="margin:0;justify-content:space-between"><h2>Venchur lugʻati</h2><button class="btn ghost sm" onclick="closeModal('mGloss')">✕</button></div>
+  <dl class="gl" id="gloss"></dl>
+</div></div>
+
+<script>
+/* ===================== MA'LUMOTLAR ===================== */
+const COLORS = {
+  "Siz (asoschi)":"#4f46e5","Hammuassis":"#0ea5e9","FFF":"#f59e0b","Akselerator":"#f97316",
+  "Biznes-farishtalar":"#eab308","Seed fond":"#84cc16","Opsion puli (ESOP)":"#a855f7",
+  "Series A investor":"#10b981","Series B investor":"#14b8a6","Series C investor":"#06b6d4","Koʻprik investor":"#ef4444"
+};
+
+const GLOSSARY = [
+  ["Venchur kapital (VC)","Yuqori xavfli, lekin tez oʻsish salohiyatiga ega yosh kompaniyalarga ulush evaziga kiritiladigan investitsiya."],
+  ["Biznes-farishta (Angel)","Oʻz shaxsiy pulini ilk bosqichdagi startaplarga tikadigan tajribali shaxs. Koʻpincha mentorlik ham qiladi."],
+  ["FFF","Friends, Family, Fools — doʻstlar, oila va 'telbalar'. Startapga eng birinchi pul beradigan, sizga ishonadigan odamlar."],
+  ["Akselerator","Startaplarga kichik investitsiya, mentorlik va tarmoq beradigan qisqa muddatli dastur (masalan, Y Combinator, Techstars)."],
+  ["Bootstrapping","Tashqi investitsiyasiz, faqat oʻz mablagʻi va daromad hisobiga rivojlanish."],
+  ["Pre-money baholash","Investitsiya kiritilishidan OLDINGI kompaniya qiymati."],
+  ["Post-money baholash","Investitsiyadan KEYINGI qiymat: Post-money = Pre-money + Investitsiya."],
+  ["Suyultirish (Dilution)","Yangi aksiyalar chiqarilganda mavjud egalarning foiz ulushi kamayishi."],
+  ["Cap table","Kompaniyada kim qancha ulushga egaligini koʻrsatuvchi jadval."],
+  ["SAFE","Simple Agreement for Future Equity — kelgusida ulushga aylanadigan oddiy kelishuv. Baholashni keyingi raundga qoldiradi."],
+  ["Konvertatsiyalanuvchi qarz","Keyingi raundda ulushga aylanadigan qarz (Convertible note), odatda foiz va chegirma bilan."],
+  ["Term sheet","Investitsiya shartlari yozilgan asosiy hujjat: summa, baholash, imtiyozlar, boshqaruv huquqlari."],
+  ["Due diligence","Investorning kompaniyani chuqur tekshiruvi: moliya, huquq, texnologiya, jamoa."],
+  ["Liquidation preference","Sotilish/tugatishda investor avval oʻz pulini (yoki 2x, 3x) olishi huquqi. Qolganini boshqalar boʻladi."],
+  ["Opsion puli (ESOP)","Xodimlarni ragʻbatlantirish uchun ajratiladigan aksiyalar ulushi (odatda 10–20%)."],
+  ["Burn rate","Kompaniya oyiga qancha pul sarflashi."],
+  ["Runway","Mavjud pul bilan kompaniya necha oy yashay olishi: Kassa ÷ Burn rate."],
+  ["Product-Market Fit (PMF)","Mahsulot bozorning haqiqiy ehtiyojini qondirib, mijozlar uni oʻzi izlab kelayotgan holat."],
+  ["Up round / Down round","Yangi raunddagi baholash oldingisidan yuqori (up) yoki past (down) boʻlishi."],
+  ["Koʻprik raund (Bridge)","Pul tugab qolganda keyingi raundgacha 'koʻprik' boʻluvchi, odatda noqulay shartli mablagʻ."],
+  ["CVC","Corporate Venture Capital — yirik korporatsiyalarning venchur boʻlinmasi (strategik investor)."],
+  ["Unicorn (Yagona shox)","1 mlrd dollardan yuqori baholangan xususiy startap."],
+  ["Exit","Investorlar va asoschilar ulushini pulga aylantirishi: IPO yoki M&A (sotib olinish)."],
+  ["IPO","Initial Public Offering — aksiyalarni birinchi marta birjada ommaga sotish."],
+  ["M&A","Mergers & Acquisitions — kompaniyani boshqa kompaniya sotib olishi yoki qoʻshilishi."],
+  ["GP / LP","General Partner — fondni boshqaruvchi; Limited Partner — fondga pul qoʻyuvchi (pensiya fondlari, oilaviy ofislar)."],
+  ["2 and 20","VC fondlarning odatiy haqi: yiliga 2% boshqaruv haqi va foydaning 20% (carry)."],
+  ["Power law","VC qoidasi: fond daromadining katta qismini 1–2 ta juda muvaffaqiyatli startap beradi."]
+];
+
+const ROAD = [
+  ["Pre-seed","$10 ming – $500 ming","Asoschi, FFF, akseleratorlar, farishtalar","Gʻoya, jamoa, prototip (MVP)","5–15%"],
+  ["Seed","$500 ming – $3 mln","Biznes-farishtalar, seed fondlar","Mahsulot-bozor mosligini (PMF) topish","10–25%"],
+  ["Series A","$2 mln – $15 mln","Venchur fondlar","Isbotlangan biznes modelni kengaytirish","15–25%"],
+  ["Series B","$10 mln – $60 mln","Oʻsish (growth) fondlari, CVC","Bozorni egallash, jamoani oʻstirish","10–20%"],
+  ["Series C+","$30 mln – $300 mln+","Kech bosqich fondlari, PE, xedj-fondlar","Global kengayish, IPO/M&A ga tayyorgarlik","5–15%"],
+  ["Exit","—","Birja (IPO) yoki xaridor kompaniya (M&A)","Investorlar va asoschilar daromadni oladi","—"]
+];
+
+/* Bosqichlar (o'yin ssenariysi) */
+const STAGES = [
+{
+  key:"Pre-seed", title:"Gʻoya va ilk mablagʻ", icon:"💡", burn:0.05,
+  intro:"Siz zoʻr gʻoya topdingiz: Oʻzbekistondagi kichik doʻkonlar uchun onlayn buyurtma va yetkazib berish platformasi. Hozircha bor-yoʻgʻi $20 ming jamgʻarmangiz va noutbukingiz bor.",
+  info:{"Mablagʻ hajmi":"$10 ming – $500 ming","Kimlar beradi":"Asoschining oʻzi, FFF, akseleratorlar, biznes-farishtalar","Instrumentlar":"Oddiy ulush, SAFE, konvertatsiyalanuvchi qarz","Investor nimaga qaraydi":"Jamoa, gʻoya, bozor hajmi"},
+  event:{
+    q:"Mahsulotni yaratish uchun dasturchi kerak. Nima qilasiz?",
+    opts:[
+      {t:"Texnik hammuassis topaman", d:"Kuchli dasturchi doʻstingiz 30% ulush evaziga jamoaga qoʻshiladi.", fx:{trac:15, holder:["Hammuassis",30]},
+       fb:"Investorlar kuchli jamoani juda qadrlaydi. Ulushingiz kamaydi, lekin kompaniyaning muvaffaqiyat ehtimoli ancha oshdi. Ulushni vesting (4 yil, 1 yil cliff) bilan berish odatiy amaliyot."},
+      {t:"Frilanserga pul toʻlab MVP yaratamiz", d:"$15 ming sarflanadi, ulush saqlanadi.", fx:{trac:5, cash:-0.015},
+       fb:"Tezkor yechim, lekin frilanser ketgach mahsulotni rivojlantirish qiyin. Investorlar 'texnik asoschi yoʻq' degan xavfni koʻradi."},
+      {t:"Oʻzim dasturlashni oʻrganaman", d:"Bepul, lekin sekin. 100% ulush sizda qoladi.", fx:{trac:-5},
+       fb:"Ulush saqlandi, ammo vaqt — startapning eng qimmat resursi. Raqobatchilar oldinga oʻtib ketishi mumkin."}
+    ]
+  },
+  offers:[
+    {name:"FFF raund", holder:"FFF", amount:0.05, fixedPct:10, d:"Amakingiz va 2 doʻstingiz $50 ming beradi, evaziga 10% ulush.", tags:["Tez va oson","Munosabatlar xavfi"]},
+    {name:"Akseleratorga kirish", holder:"Akselerator", amount:0.15, fixedPct:7, trac:10, minTrac:45, d:"$150 ming, 7% ulush + 3 oylik mentorlik va Demo Day.", tags:["Mentorlik","Tarmoq (network)"]},
+    {name:"Bootstrapping", holder:null, amount:0, d:"Tashqi pul olmaysiz. Xarajatni minimal qilib, ilk daromad hisobiga yashaysiz.", tags:["100% nazorat","Sekin oʻsish"], burnOverride:0.008, trac:-5}
+  ],
+  quiz:{q:"Startap dunyosidagi 'FFF' qisqartmasi nimani anglatadi?",
+    opts:["Fast Funding Fund — tezkor fond","Friends, Family, Fools — doʻstlar, oila va 'telbalar'","Final Financing Form — yakuniy hujjat","Founder Fixed Fee — asoschi haqi"], a:1,
+    ex:"FFF — sizga shaxsan ishonib, eng birinchi pul beradigan odamlar. Ular koʻpincha biznesni emas, sizni moliyalashtiradi."}
+},
+{
+  key:"Seed", title:"Urugʻ (Seed) raund", icon:"🌱", burn:0.8,
+  intro:"Prototip tayyor, 20 ta doʻkon sinovdan oʻtkazmoqda. Endi mahsulot-bozor mosligini (PMF) topish va jamoani kengaytirish uchun jiddiyroq pul kerak.",
+  info:{"Mablagʻ hajmi":"$500 ming – $3 mln","Kimlar beradi":"Biznes-farishtalar, seed fondlar, akseleratorlar","Instrumentlar":"SAFE, imtiyozli aksiyalar","Investor nimaga qaraydi":"Ilk traction, foydalanuvchilar oʻsishi, jamoa"},
+  event:{
+    q:"Mahsulotni qanday rivojlantirasiz?",
+    opts:[
+      {t:"Tezda MVP chiqarib, fikr yigʻaman", d:"Kamchiliklari bor, lekin haqiqiy mijozlar ishlatadi.", fx:{trac:15},
+       fb:"'Lean Startup' yondashuvi: Qur → Oʻlcha → Oʻrgan. Tez fikr olish — PMF ga eng qisqa yoʻl."},
+      {t:"1 yil mukammal mahsulot ustida ishlayman", d:"Bozorga chiqmasdan, hamma narsani ideal qilaman.", fx:{trac:-10, cash:-0.03},
+       fb:"Xato! Startaplarning ~35% i 'bozorga keraksiz mahsulot' sabab yopiladi. Mijoz fikrisiz 'mukammal' mahsulot koʻpincha hech kimga kerak boʻlmaydi."},
+      {t:"100 ta mijoz bilan suhbat, keyin pivot", d:"Muammoni chuqur oʻrganib, yoʻnalishni oʻzgartirasiz.", fx:{trac:8, rnd:[0,12]},
+       fb:"Pivot — strategiyani oʻzgartirish. Slack, Instagram, YouTube ham pivot natijasida paydo boʻlgan."}
+    ]
+  },
+  offers:[
+    {name:"Biznes-farishtalar sindikati", holder:"Biznes-farishtalar", amount:0.8, pre:3, trac:5, d:"5 ta tajribali farishta SAFE orqali $800 ming beradi. Mentorlik bonus.", tags:["SAFE","Mentorlik"]},
+    {name:"Seed fond", holder:"Seed fond", amount:1.5, pre:5.5, d:"Ixtisoslashgan seed fond $1.5 mln, standart shartlar (1x imtiyoz).", tags:["Standart shartlar","Keyingi raundga yordam"]},
+    {name:"'Saxiy' investor", holder:"Seed fond", amount:2.5, pre:10, pref:2, trac:-5, d:"Juda yuqori baholash! Lekin 2x liquidation preference va direktorlar kengashida 2 ta oʻrin talab qiladi.", tags:["Yuqori baholash","2x imtiyoz","Nazoratni yoʻqotish"]}
+  ],
+  quiz:{q:"SAFE nima?",
+    opts:["Bank krediti turi","Davlat granti","Kelgusida ulushga aylanadigan oddiy investitsiya kelishuvi","Startapni sugʻurtalash shartnomasi"], a:2,
+    ex:"SAFE (Simple Agreement for Future Equity) — Y Combinator 2013-yilda yaratgan. Baholashni keyingi raundga qoldirib, tez va arzon pul jalb qilish imkonini beradi."}
+},
+{
+  key:"Series A", title:"A raund — Kengayish", icon:"📈", burn:6, esop:10,
+  intro:"Platformada 2000 ta doʻkon, oylik daromad $150 ming va har oy 15% oʻsish bor. Endi biznes modelni katta miqyosga olib chiqish vaqti.",
+  info:{"Mablagʻ hajmi":"$2 mln – $15 mln","Kimlar beradi":"Venchur kapital fondlari","Instrumentlar":"Imtiyozli aksiyalar (Series A Preferred)","Investor nimaga qaraydi":"PMF isboti, unit-iqtisodiyot (LTV/CAC), oʻsish sur'ati"},
+  event:{
+    q:"Investorlar oldidan qaysi koʻrsatkichga e'tibor qaratasiz?",
+    opts:[
+      {t:"Har qanday narxda oʻsish", d:"Marketingga katta pul, chegirmalar, reklama.", fx:{trac:12, burnAdj:2},
+       fb:"Oʻsish ajoyib, lekin xarajat (burn rate) keskin oshdi. Agar CAC > LTV boʻlsa, har yangi mijoz zarar keltiradi."},
+      {t:"Unit-iqtisodiyotni yaxshilash", d:"Har bir mijoz foydali boʻlishiga erishish (LTV > 3×CAC).", fx:{trac:12, burnAdj:-1},
+       fb:"Toʻgʻri! A raund investorlari 'sogʻlom' oʻsishni yoqtiradi. LTV/CAC ≥ 3 — yaxshi koʻrsatkich hisoblanadi."},
+      {t:"5 ta yangi mahsulot liniyasi ochish", d:"Taksi, ovqat, toʻlovlar... hammasi birdan!", fx:{trac:-8, burnAdj:1.5},
+       fb:"Fokusni yoʻqotish — keng tarqalgan xato. Avval bitta yoʻnalishda gʻolib boʻling."}
+    ]
+  },
+  offers:[
+    {name:"Top darajali VC fond", holder:"Series A investor", amount:8, pre:24, d:"Mashhur fond: $8 mln, 1x imtiyoz, kengashda 1 oʻrin. Brend keyingi raundlarni osonlashtiradi.", tags:["Kuchli brend","1x imtiyoz"]},
+    {name:"Korporativ venchur (CVC)", holder:"Series A investor", amount:6, pre:17, trac:10, d:"Yirik telekom kompaniyasi: $6 mln va oʻz mijoz bazasiga kirish imkoni.", tags:["Strategik hamkorlik","Pastroq baholash"]},
+    {name:"Agressiv fond", holder:"Series A investor", amount:12, pre:38, pref:2, trac:-5, d:"$12 mln, juda yuqori baholash, lekin 2x participating imtiyoz.", tags:["Koʻp pul","2x imtiyoz"]}
+  ],
+  quiz:{q:"Pre-money baholash $4 mln, investor $1 mln kiritdi. Investor ulushi qancha?",
+    opts:["25%","20%","10%","40%"], a:1,
+    ex:"Post-money = 4 + 1 = $5 mln. Investor ulushi = 1 ÷ 5 = 20%. Koʻp kishi xato qilib 1 ÷ 4 = 25% deb hisoblaydi!"}
+},
+{
+  key:"Series B", title:"B raund — Bozorni egallash", icon:"🌍", burn:20,
+  intro:"Siz Oʻzbekistonda bozor yetakchisiga aylandingiz. Raqobatchilar ham pul jalb qilmoqda. Endi tezkor masshtablash kerak.",
+  info:{"Mablagʻ hajmi":"$10 mln – $60 mln","Kimlar beradi":"Growth fondlar, CVC, oldingi investorlar","Instrumentlar":"Series B imtiyozli aksiyalar","Investor nimaga qaraydi":"Barqaror daromad, bozor ulushi, jamoa boshqaruvi"},
+  event:{
+    q:"Qanday kengayasiz?",
+    opts:[
+      {t:"Markaziy Osiyo davlatlariga chiqish", d:"Qozogʻiston, Qirgʻiziston, Tojikiston. Katta imkoniyat, katta xavf.", fx:{trac:5, rnd:[-5,20]},
+       fb:"Xalqaro kengayish — B raundning klassik maqsadi. Natija mahalliy jamoa va moslashuvga bogʻliq."},
+      {t:"Mavjud mijozlarga yangi xizmatlar", d:"Doʻkonlarga kredit, ombor boshqaruvi, toʻlovlar.", fx:{trac:10},
+       fb:"Cross-sell — mijozni jalb qilish xarajati yoʻq, shuning uchun foydali. Ishonchli tanlov."},
+      {t:"Raqobatchini sotib olish", d:"$3 mln sarflab, eng yaqin raqibni yutib yuborasiz.", fx:{trac:12, cash:-3},
+       fb:"Sotib olish orqali oʻsish (M&A) bozor ulushini tez oshiradi, lekin integratsiya qiyin va qimmat."}
+    ]
+  },
+  offers:[
+    {name:"Growth fond", holder:"Series B investor", amount:25, pre:80, d:"Xalqaro oʻsish fondi, $25 mln, standart shartlar.", tags:["Standart shartlar"]},
+    {name:"Strategik investor", holder:"Series B investor", amount:20, pre:60, trac:8, d:"Mintaqaviy bank: $20 mln + toʻlov infratuzilmasiga kirish.", tags:["Strategik foyda","Pastroq baholash"]},
+    {name:"Mega-raund", holder:"Series B investor", amount:40, pre:140, pref:2, d:"$40 mln, katta baholash, lekin 2x imtiyoz va yillik daromad maqsadlari (bajarilmasa — jarima).", tags:["Koʻp pul","2x imtiyoz","Qattiq shartlar"]}
+  ],
+  quiz:{q:"'2x liquidation preference' nimani anglatadi?",
+    opts:["Investor ovoz berishda 2 ta ovozga ega","Kompaniya sotilganda investor avval qoʻygan pulining 2 baravarini oladi","Investor 2 yildan keyin chiqib keta oladi","Investor ulushi 2 barobar oʻsadi"], a:1,
+    ex:"Masalan, investor $10 mln qoʻygan boʻlsa, sotilishda boshqalardan oldin $20 mln oladi. Exit kichik boʻlsa, asoschilarga deyarli hech narsa qolmasligi mumkin!"}
+},
+{
+  key:"Series C", title:"C raund — Kech bosqich", icon:"🏙️", burn:45,
+  intro:"Kompaniyangiz yirik oʻyinchiga aylandi. Ammo global bozorda 'venchur qishi' boshlandi: investorlar ehtiyotkor, baholashlar tushmoqda.",
+  info:{"Mablagʻ hajmi":"$30 mln – $300 mln+","Kimlar beradi":"Kech bosqich fondlari, PE, xedj-fondlar, suveren fondlar","Instrumentlar":"Series C/D imtiyozli aksiyalar","Investor nimaga qaraydi":"Rentabellikka yoʻl, IPO/M&A salohiyati"},
+  event:{
+    q:"Bozor inqirozida nima qilasiz?",
+    opts:[
+      {t:"Xarajatlarni qisqartirib, foydaga chiqish", d:"Ortiqcha loyihalarni yopish, samaradorlikka urgʻu.", fx:{trac:8, burnAdj:-15},
+       fb:"'Default alive' holati: pul tugasa ham kompaniya yashay oladi. Inqirozda investorlar aynan shuni qadrlaydi."},
+      {t:"Oʻsishni toʻxtatmaslik", d:"Raqobatchilar zaif paytda bozorni egallab olish.", fx:{trac:0, rnd:[-15,18], burnAdj:5},
+       fb:"Jasur strategiya: Amazon 2001-yilda shunday qilgan. Lekin pul tugasa — oʻlim."},
+      {t:"Hech narsani oʻzgartirmaslik", d:"Inqiroz tez oʻtib ketadi, deb kutish.", fx:{trac:-10},
+       fb:"Inqirozga moslashmaslik xavfli. Investorlar boshqaruv sifatiga shubha qila boshlaydi."}
+    ]
+  },
+  offers:[
+    {name:"Kech bosqich fondi", holder:"Series C investor", amount:60, pre:250, d:"$60 mln, standart shartlar, IPO tayyorgarligiga yordam.", tags:["Standart shartlar","IPO tajribasi"]},
+    {name:"Xedj-fond (crossover)", holder:"Series C investor", amount:80, pre:350, pref:2, d:"$80 mln, eng yuqori baholash, lekin 2x imtiyoz.", tags:["Yuqori baholash","2x imtiyoz"]},
+    {name:"Ehtiyotkor raund", holder:"Series C investor", amount:50, pre:170, trac:5, d:"$50 mln, pastroq baholash, lekin investorlar sabrli va yordam beradi.", tags:["Pastroq baholash","Uzoq muddatli hamkor"]}
+  ],
+  quiz:{q:"'Down round' nima?",
+    opts:["Yangi raund baholashi oldingi raunddan past boʻlgani","Oxirgi moliyalashtirish raundi","Faqat qarz orqali moliyalashtirish","Investorlar pulni qaytarib olishi"], a:0,
+    ex:"Down round — kompaniya qiymati tushganini koʻrsatadi. Bu asoschilarni kuchli suyultiradi va xodimlar motivatsiyasini pasaytiradi."}
+},
+{
+  key:"Exit", title:"Exit — Hosilni yigʻish", icon:"🏆", exit:true,
+  intro:"Yillar mehnati natija berdi! Endi investorlar oʻz daromadini kutmoqda. Ulushingizni pulga aylantirish yoʻlini tanlang.",
+  info:{"IPO":"Aksiyalarni birjada sotish. Eng katta daromad, eng katta xavf.","M&A":"Yirik kompaniya sizni sotib oladi. Kafolatlangan narx.","Mustaqil qolish":"Kompaniyani boshqarishda davom etish, natija noaniq.","Muhim":"Imtiyozli investorlar (2x) avval oʻz pulini oladi!"},
+  quiz:{q:"'Unicorn' (yagona shox) deb qanday kompaniyaga aytiladi?",
+    opts:["Birinchi yilda foydaga chiqqan startap","Birjada savdo qilinadigan har qanday kompaniya","1 mlrd dollardan yuqori baholangan xususiy startap","Faqat bitta investorga ega startap"], a:2,
+    ex:"Atama 2013-yilda Aileen Lee tomonidan kiritilgan — oʻsha paytda bunday kompaniyalar juda kam boʻlgan. Mintaqamizda Kaspi.kz, Uzum kabi kompaniyalar bunga misol."}
+}
+];
+
+/* ===================== HOLAT ===================== */
+let S;
+function reset(name){
+  S = {name:name||"Oʻyinchi", stage:0, cash:0.02, trac:40, know:0, cap:{"Siz (asoschi)":100},
+       hist:[{label:"Start", cap:{"Siz (asoschi)":100}}], lastPost:0, prefExtra:0, burnAdj:0, raised:0, log:[]};
+}
+
+/* ===================== YORDAMCHILAR ===================== */
+const $ = id => document.getElementById(id);
+function money(m){
+  if (m===0) return "$0";
+  const neg = m<0; m=Math.abs(m); let s;
+  if (m>=1000) s="$"+(m/1000).toFixed(2).replace(/\.?0+$/,"")+" mlrd";
+  else if (m>=1) s="$"+(m>=100?m.toFixed(0):m.toFixed(1).replace(/\.0$/,""))+" mln";
+  else s="$"+Math.round(m*1000)+" ming";
+  return (neg?"−":"")+s;
+}
+const pct = x => (Math.round(x*10)/10).toFixed(1)+"%";
+const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
+const rnd = (a,b)=>a+Math.random()*(b-a);
+const mult = ()=>0.5+S.trac/100;
+function dilute(holder,p){
+  for (const k in S.cap) S.cap[k]*= (1-p/100);
+  S.cap[holder]=(S.cap[holder]||0)+p;
+}
+function snap(label){ S.hist.push({label, cap:{...S.cap}}); }
+function me(){ return S.cap["Siz (asoschi)"]; }
+function addTrac(x){ S.trac = clamp(S.trac + x, 5, 100); }
+
+function offerCalc(o){
+  if (o.amount===0) return {pre:S.lastPost, post:S.lastPost, p:0};
+  if (o.fixedPct){ const post=o.amount/(o.fixedPct/100); return {pre:post-o.amount, post, p:o.fixedPct}; }
+  const pre = Math.round(o.pre*mult()*10)/10, post = pre+o.amount;
+  return {pre, post, p:o.amount/post*100};
+}
+
+/* ===================== RENDER ===================== */
+function renderStats(){
+  if(!S){ $("stats").innerHTML=""; return; }
+  $("stats").innerHTML = `
+    <div class="chip">💰 Kassa: <b>${money(S.cash)}</b></div>
+    <div class="chip">🏷️ Baholash: <b>${S.lastPost?money(S.lastPost):"—"}</b></div>
+    <div class="chip">👤 Ulushingiz: <b>${pct(me())}</b></div>
+    <div class="chip">📊 Rivojlanish: <b>${Math.round(S.trac)}/100</b></div>
+    <div class="chip">🎓 Bilim: <b>${S.know}/${STAGES.length}</b></div>`;
+}
+function capBar(cap){
+  return `<div class="bar">${Object.entries(cap).filter(e=>e[1]>0.05).map(([k,v])=>`<div title="${k}: ${pct(v)}" style="width:${v}%;background:${COLORS[k]||'#888'}"></div>`).join("")}</div>`;
+}
+function renderSide(){
+  if(!S){ $("side").innerHTML = sideIntro(); return; }
+  const legend = Object.entries(S.cap).sort((a,b)=>b[1]-a[1]).filter(e=>e[1]>0.05)
+    .map(([k,v])=>`<div><i style="background:${COLORS[k]||'#888'}"></i><span>${k}</span><span>${pct(v)}</span></div>`).join("");
+  const hist = S.hist.map(h=>`<div>${h.label}${capBar(h.cap)}</div>`).join("");
+  $("side").innerHTML = `
+    <div class="card"><h3>📑 Cap table (ulushlar jadvali)</h3>${capBar(S.cap)}<div class="legend">${legend}</div></div>
+    <div class="card"><h3>📉 Ulushlar tarixi</h3><div class="hist">${hist}</div>
+      <p class="muted" style="font-size:13px">Har bir raundda yangi aksiyalar chiqariladi — bu <b>suyultirish</b>. Ulush foizi kamayadi, lekin kompaniya qiymati oshsa, ulushingiz qiymati oʻsadi.</p></div>`;
+}
+function sideIntro(){
+  const top = board().slice(0,5);
+  return `<div class="card"><h3>🏅 Eng yaxshi natijalar</h3>${top.length?`<table><tr><th>Ism</th><th>Daromad</th><th>🎓</th></tr>${top.map(r=>`<tr><td>${esc(r.name)}</td><td>${money(r.payout)}</td><td>${r.know}</td></tr>`).join("")}</table>`:`<p class="muted">Hali natijalar yoʻq. Birinchi boʻling!</p>`}</div>
+  <div class="card"><h3>🎯 Qoidalar</h3><p class="muted" style="font-size:14px">Har bosqichda: 1) bosqich haqida oʻqing, 2) strategik qaror qabul qiling, 3) investor taklifini tanlang, 4) bilim savoliga javob bering. Maqsad — exitda <b>imkon qadar koʻp pul</b> bilan chiqish.</p></div>`;
+}
+function steps(){
+  return `<div class="steps">${STAGES.map((s,i)=>`<div class="step ${i<S.stage?'done':i===S.stage?'now':''}">${s.icon} ${s.key}</div>`).join("")}</div>`;
+}
+function show(html){ const el=$("screen"); el.classList.remove("fade"); void el.offsetWidth; el.classList.add("fade"); el.innerHTML=html; renderStats(); renderSide(); window.scrollTo({top:0,behavior:"smooth"}); }
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ===================== EKRANLAR ===================== */
+function home(){
+  S=null;
+  show(`<span class="tag">Interaktiv taʼlim oʻyini</span>
+    <h1>🚀 Startap Sayohati</h1>
+    <p>Siz — yosh asoschisiz. Gʻoyadan boshlab <b>Pre-seed → Seed → Series A → B → C → Exit</b> bosqichlaridan oʻtib, venchur kapital qanday ishlashini oʻz tajribangizda sinab koʻrasiz.</p>
+    <div class="road">${ROAD.map(r=>`<div><b>${r[0]}</b>${r[1]}</div>`).join("")}</div>
+    <p class="muted">Har bir qaroringiz kompaniya rivojlanishiga, baholashiga va ulushingizga ta'sir qiladi. Arzon pul olib koʻp ulush berasizmi yoki qimmat baholash evaziga ogʻir shartlarga rozi boʻlasizmi?</p>
+    <div class="row"><input type="text" id="pname" placeholder="Ismingiz yoki jamoa nomi" maxlength="24">
+      <button class="btn" onclick="start()">Oʻyinni boshlash ▶</button></div>`);
+  setTimeout(()=>{ const i=$("pname"); if(i) i.addEventListener("keydown",e=>{if(e.key==="Enter")start();}); },0);
+}
+function start(){ reset(($("pname").value||"").trim()); stageInfo(); }
+
+function stageInfo(){
+  const st = STAGES[S.stage];
+  show(`${steps()}<span class="tag">${S.stage+1}-bosqich</span>
+    <h2>${st.icon} ${st.key}: ${st.title}</h2>
+    <p>${st.intro}</p>
+    <div class="info">${Object.entries(st.info).map(([k,v])=>`<div><b>${k}</b>${v}</div>`).join("")}</div>
+    <div class="row"><button class="btn" onclick="${st.exit?'exitChoice()':'eventQ()'}">Davom etish →</button></div>`);
+}
+
+function eventQ(){
+  const st = STAGES[S.stage];
+  show(`${steps()}<span class="tag">Strategik qaror</span><h2>🤔 ${st.event.q}</h2>
+    <div class="opts">${st.event.opts.map((o,i)=>`<button class="opt" onclick="eventPick(${i})"><span class="t">${o.t}</span><span class="d">${o.d}</span></button>`).join("")}</div>`);
+}
+function eventPick(i){
+  const o = STAGES[S.stage].event.opts[i], fx=o.fx; let dt = fx.trac||0;
+  if (fx.rnd) dt += Math.round(rnd(fx.rnd[0],fx.rnd[1]));
+  addTrac(dt);
+  if (fx.cash) S.cash += fx.cash;
+  S.burnAdj = fx.burnAdj||0;
+  let extra="";
+  if (fx.holder){ dilute(fx.holder[0],fx.holder[1]); extra=`<br>👥 ${fx.holder[0]} ${fx.holder[1]}% ulush oldi.`; }
+  if (fx.cash) extra += `<br>💸 Xarajat: ${money(-fx.cash)}`;
+  if (S.burnAdj) extra += `<br>🔥 Bu bosqichdagi xarajat ${S.burnAdj>0?"+":""}${money(S.burnAdj)} ga oʻzgaradi.`;
+  show(`${steps()}<span class="tag">Natija</span><h2>${o.t}</h2>
+    <div class="box ${dt>=5?'good':dt<0?'bad':'warn'}"><b>Rivojlanish: ${dt>=0?"+":""}${dt}</b>${extra}</div>
+    <p>${o.fb}</p>
+    <div class="row"><button class="btn" onclick="offers()">Investorlar bilan uchrashish →</button></div>`);
+}
+
+function offers(){
+  const st = STAGES[S.stage];
+  const list = st.offers.map((o,i)=>{
+    const c = offerCalc(o);
+    const locked = o.minTrac && S.trac<o.minTrac;
+    const down = S.lastPost && o.amount && c.pre < S.lastPost;
+    const nums = o.amount===0 ? `<span class="grn">Ulush: 0%</span><span>Pul: $0</span>`
+      : `<span>Investitsiya: <b>${money(o.amount)}</b></span><span>Pre-money: ${money(c.pre)}</span><span>Post-money: ${money(c.post)}</span><span class="red">Beriladigan ulush: ${pct(c.p)}</span>${o.pref>1?`<span class="red">${o.pref}x imtiyoz</span>`:""}${down?`<span class="red">⚠ DOWN ROUND</span>`:S.lastPost&&o.amount?`<span class="grn">▲ Up round</span>`:""}`;
+    return `<button class="opt" ${locked?"disabled style='opacity:.5'":""} onclick="takeOffer(${i})"><span class="t">${o.name}</span><span class="d">${o.d}</span>
+      <span class="nums">${nums}${(o.tags||[]).map(t=>`<span>${t}</span>`).join("")}</span>
+      ${locked?`<span class="d" style="color:var(--bad)">🔒 Akselerator rad etdi: rivojlanish kamida ${o.minTrac} boʻlishi kerak (sizda ${Math.round(S.trac)}).</span>`:""}</button>`;
+  }).join("");
+  const burn = (st.burn + S.burnAdj);
+  show(`${steps()}<span class="tag">Term sheet</span><h2>💼 Investorlar takliflari</h2>
+    <p class="muted">Baholash rivojlanish darajangizga bogʻliq (${Math.round(S.trac)}/100 → koeffitsiyent ×${mult().toFixed(2)}). Keyingi bosqichgacha taxminan <b>${money(burn)}</b> sarflanadi — pul yetmasa, noqulay koʻprik raund olishga majbur boʻlasiz.</p>
+    <div class="opts">${list}</div>`);
+}
+
+function takeOffer(i){
+  const st = STAGES[S.stage], o = st.offers[i];
+  const before = me(); let notes = [];
+  if (st.esop){ dilute("Opsion puli (ESOP)", st.esop);
+    notes.push(`<div class="box note">🎁 <b>Opsion puli:</b> Investor xodimlar uchun ${st.esop}% ESOP yaratishni talab qildi. U investitsiyadan <i>oldin</i> (pre-money) yaratildi, shuning uchun faqat mavjud egalar suyultirildi. Ulushingiz: ${pct(before)} → ${pct(me())}</div>`); }
+  const mid = me(); const c = offerCalc(o);
+  let math="";
+  if (o.amount>0){
+    dilute(o.holder, c.p);
+    S.cash += o.amount; S.raised += o.amount; S.lastPost = c.post;
+    if (o.pref>1) S.prefExtra += (o.pref-1)*o.amount;
+    math = `<div class="math">Post-money = Pre-money + Investitsiya = ${money(c.pre)} + ${money(o.amount)} = <b>${money(c.post)}</b><br>
+      Investor ulushi = ${money(o.amount)} ÷ ${money(c.post)} = <b>${pct(c.p)}</b><br>
+      Sizning ulushingiz = ${pct(mid)} × (1 − ${pct(c.p)}) = <b>${pct(me())}</b><br>
+      Ulushingiz qiymati = ${pct(me())} × ${money(c.post)} = <b>${money(me()/100*c.post)}</b></div>`;
+  } else {
+    math = `<div class="box good">Siz hech qanday ulush bermadingiz — 100% nazorat saqlanib qoldi. Lekin oʻsish sekinlashdi.</div>`;
+  }
+  if (o.trac) addTrac(o.trac);
+  if (o.pref>1) notes.push(`<div class="box warn">⚠ <b>${o.pref}x imtiyoz:</b> Exitda bu investor boshqalardan oldin ${money(o.amount*o.pref)} oladi. Bu sizning yakuniy daromadingizni kamaytiradi.</div>`);
+  const burn = o.burnOverride ?? (st.burn + S.burnAdj);
+  S.cash -= burn;
+  notes.push(`<div class="box note">🔥 Keyingi bosqichgacha sarflandi: <b>${money(burn)}</b>. Kassada qoldi: <b>${money(Math.max(S.cash,0))}</b></div>`);
+  if (S.cash < 0){
+    const short = -S.cash;
+    dilute("Koʻprik investor", 8); addTrac(-5); S.cash = 0;
+    notes.push(`<div class="box bad">🚨 <b>Pul tugadi!</b> ${money(short)} yetishmadi. Kompaniyani saqlab qolish uchun noqulay <b>koʻprik raund</b> olindi: 8% ulush berildi, rivojlanish −5. <br>Saboq: har doim kamida 18–24 oylik <i>runway</i> bilan pul jalb qiling.</div>`);
+  }
+  if (S.lastPost >= 1000 && !S.unicorn){ S.unicorn=true; notes.push(`<div class="box good">🦄 <b>Tabriklaymiz!</b> Kompaniyangiz baholashi $1 mlrd dan oshdi — siz <b>unicorn</b>siz!</div>`); }
+  snap(st.key);
+  S.log.push({stage:st.key, offer:o.name, amount:o.amount, post:S.lastPost, me:me()});
+  show(`${steps()}<span class="tag">Raund yopildi</span><h2>✅ ${o.name}</h2>${math}${notes.join("")}
+    <div class="row"><button class="btn" onclick="quiz()">Bilim savoli →</button></div>`);
+}
+
+function quiz(){
+  const q = STAGES[S.stage].quiz;
+  show(`${steps()}<span class="tag">🎓 Bilim savoli</span><h2>${q.q}</h2>
+    <div class="opts" id="qopts">${q.opts.map((o,i)=>`<button class="opt" onclick="answer(${i})"><span class="t">${String.fromCharCode(65+i)}) ${o}</span></button>`).join("")}</div><div id="qfb"></div>`);
+}
+function answer(i){
+  const q = STAGES[S.stage].quiz, ok = i===q.a;
+  if (ok) S.know++;
+  [...$("qopts").children].forEach((b,j)=>{ b.disabled=true; if(j===q.a) b.classList.add("correct"); else if(j===i) b.classList.add("wrong"); });
+  const last = S.stage===STAGES.length-1;
+  $("qfb").innerHTML = `<div class="box ${ok?'good':'bad'}"><b>${ok?"✔ Toʻgʻri!":"✘ Notoʻgʻri."}</b> ${q.ex}</div>
+    <div class="row"><button class="btn" onclick="${last?'final()':'next()'}">${last?"Yakuniy natija 🏁":"Keyingi bosqich →"}</button></div>`;
+  renderStats();
+}
+function next(){ S.stage++; S.burnAdj=0; stageInfo(); }
+
+/* ===================== EXIT ===================== */
+function exitChoice(){
+  const b = Math.max(S.lastPost, 1), t=S.trac;
+  S.exitOpts = {
+    ma:  Math.round(b*(0.7+t/100)*10)/10,
+    ipoLo: Math.round(b*(0.5+t/50)*0.7), ipoHi: Math.round(b*(0.5+t/50)*1.4),
+    ipoFail: Math.round(clamp((60-t)/100,0.05,0.6)*100)
+  };
+  const E=S.exitOpts;
+  show(`${steps()}<span class="tag">Exit</span><h2>🏆 Qaysi yoʻl bilan chiqasiz?</h2>
+    <p class="muted">Oxirgi baholash: <b>${money(S.lastPost)}</b>. Rivojlanish: ${Math.round(t)}/100. Investorlarning qoʻshimcha imtiyozlari: <b>${money(S.prefExtra)}</b> (ular birinchi toʻlanadi).</p>
+    <div class="opts">
+      <button class="opt" onclick="doExit('ipo')"><span class="t">🔔 IPO — birjaga chiqish</span><span class="d">Eng katta daromad imkoniyati, lekin bozor kayfiyatiga bogʻliq. Muvaffaqiyatsizlik ehtimoli: ${E.ipoFail}%.</span><span class="nums"><span>Kutilgan qiymat: ${money(E.ipoLo)} – ${money(E.ipoHi)}</span></span></button>
+      <button class="opt" onclick="doExit('ma')"><span class="t">🤝 M&A — yirik kompaniyaga sotish</span><span class="d">Xalqaro texnologiya giganti kompaniyani sotib olishni taklif qilmoqda. Narx kafolatlangan.</span><span class="nums"><span class="grn">Taklif: ${money(E.ma)}</span></span></button>
+      <button class="opt" onclick="doExit('hold')"><span class="t">🧭 Mustaqil qolish</span><span class="d">Sotmaysiz, kompaniyani yana 5 yil boshqarasiz. Natija juda noaniq — ham katta yutuq, ham yoʻqotish boʻlishi mumkin.</span></button>
+    </div>`);
+}
+function doExit(kind){
+  const b=Math.max(S.lastPost,1), t=S.trac; let val, story;
+  if (kind==="ma"){ val=S.exitOpts.ma; story="Kompaniyangiz muvaffaqiyatli sotildi! Bitim 6 oylik due diligence'dan soʻng yopildi."; }
+  else if (kind==="ipo"){
+    if (Math.random()*100 < S.exitOpts.ipoFail){ val=Math.round(b*0.4); story="😬 IPO kuni bozor qulab tushdi. Aksiyalar kutilganidan ancha past narxda joylashtirildi."; }
+    else { val=Math.round(b*(0.5+t/50)*rnd(0.7,1.4)); story="🔔 Qoʻngʻiroq chalindi! Aksiyalaringiz birjada savdoga chiqdi. (Eslatma: haqiqiy IPO'da asoschilar odatda 6 oylik lock-up davrida aksiyani sota olmaydi.)"; }
+  } else {
+    const r=rnd(0.4,1.6); val=Math.round(b*(0.4+t/60)*r);
+    story = r>1.1 ? "📈 Kompaniya barqaror oʻsdi va qiymati sezilarli oshdi!" : r<0.8 ? "📉 Yangi raqobatchilar paydo boʻldi, qiymat pasaydi." : "Kompaniya oʻrtacha sur'atda rivojlandi.";
+  }
+  S.exit={kind,val,story};
+  quiz();
+}
+
+function final(){
+  const {val,story,kind} = S.exit;
+  const pool = Math.max(0, val - S.prefExtra);
+  const payout = me()/100*pool;
+  const rank = payout>=200?["🦄 Afsonaviy asoschi","Siz venchur dunyosining yulduzisiz!"]:payout>=50?["🚀 Seriyali tadbirkor","Ajoyib natija — investorlar navbatda turadi."]
+    :payout>=10?["💼 Muvaffaqiyatli asoschi","Yaxshi exit! Lekin ulushingizni yaxshiroq himoya qilish mumkin edi."]:payout>=1?["🌱 Tajribali asoschi","Millioner boʻldingiz, lekin koʻp narsani investorlarga berdingiz."]:["📚 Oʻrganuvchi","Bu safar omad kulib boqmadi. Xatolardan saboq olib, qaytadan urinib koʻring!"];
+  saveBoard({name:S.name, payout:Math.round(payout*100)/100, know:S.know, pct:me()});
+  const rows = S.log.map(l=>`<tr><td>${l.stage}</td><td>${l.offer}</td><td>${l.amount?money(l.amount):"—"}</td><td>${l.post?money(l.post):"—"}</td><td>${pct(l.me)}</td></tr>`).join("");
+  show(`<span class="tag">Oʻyin yakuni</span><h2>${rank[0]}</h2><p>${rank[1]}</p>
+    <div class="box note">${story}</div>
+    <div class="info">
+      <div><b>Exit qiymati</b>${money(val)}</div>
+      <div><b>Imtiyozlar (avval toʻlandi)</b>${money(S.prefExtra)}</div>
+      <div><b>Sizning ulushingiz</b>${pct(me())}</div>
+      <div><b>Jami jalb qilingan</b>${money(S.raised)}</div>
+      <div><b>Bilim</b>${S.know}/${STAGES.length} toʻgʻri javob</div>
+    </div>
+    <p class="muted">Sizning daromadingiz = ${pct(me())} × (${money(val)} − ${money(S.prefExtra)})</p>
+    <div class="big">${money(payout)}</div>
+    <h3 style="margin-top:20px">📜 Sizning moliyalashtirish yoʻlingiz</h3>
+    <div class="tablewrap"><table><tr><th>Bosqich</th><th>Investor</th><th>Summa</th><th>Post-money</th><th>Ulushingiz</th></tr>${rows}</table></div>
+    <h3 style="margin-top:20px">💡 Asosiy saboqlar</h3>
+    <ul>
+      <li>Har bir raund ulushingizni <b>suyultiradi</b> — lekin "katta pirogning kichik boʻlagi kichik pirogning katta boʻlagidan yaxshiroq".</li>
+      <li><b>Eng yuqori baholash har doim eng yaxshi taklif emas</b>: 2x imtiyoz, nazorat talablari exitda qimmatga tushadi.</li>
+      <li><b>Runway</b>ni nazorat qiling: pul tugasa, noqulay shartlarga rozi boʻlishga majbur boʻlasiz.</li>
+      <li>Investorlar avvalo <b>jamoa</b> va <b>tez oʻrganish</b> qobiliyatiga pul tikadi.</li>
+    </ul>
+    <div class="row"><button class="btn" onclick="home()">🔄 Qayta oʻynash</button><button class="btn ghost" onclick="openModal('mRoad')">📋 Bosqichlar jadvali</button></div>`);
+}
+
+/* ===================== REYTING ===================== */
+function board(){ try{ return JSON.parse(localStorage.getItem("vc_board")||"[]"); }catch(e){ return []; } }
+function saveBoard(r){ try{ const b=board(); b.push(r); b.sort((x,y)=>y.payout-x.payout); localStorage.setItem("vc_board",JSON.stringify(b.slice(0,20))); }catch(e){} }
+
+/* ===================== MODALLAR ===================== */
+function openModal(id){ $(id).classList.add("open"); }
+function closeModal(id){ $(id).classList.remove("open"); }
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") document.querySelectorAll(".modal.open").forEach(m=>m.classList.remove("open")); });
+$("gloss").innerHTML = GLOSSARY.map(([t,d])=>`<dt>${t}</dt><dd>${d}</dd>`).join("");
+$("roadTable").innerHTML = `<div class="tablewrap"><table><tr><th>Bosqich</th><th>Odatiy summa</th><th>Investorlar</th><th>Maqsad</th><th>Beriladigan ulush</th></tr>${ROAD.map(r=>`<tr>${r.map((c,i)=>`<td>${i?c:"<b>"+c+"</b>"}</td>`).join("")}</tr>`).join("")}</table></div>
+  <p class="muted" style="font-size:13px">Raqamlar taxminiy boʻlib, mamlakat, soha va bozor holatiga qarab farq qiladi. Oʻzbekiston va Markaziy Osiyoda summalar odatda AQShdagidan kichikroq.</p>`;
+
+home();
+</script>
+</body>
+</html>
