@@ -1,5 +1,6 @@
-# Startap Sayohati
+# Venchur oʻyinlari
 
-Venchur kapital va startaplarni moliyalashtirish bosqichlari boʻyicha 3 guruhli interaktiv taʼlim oʻyini (Pre-seed → Seed → Series A/B/C → Exit).
+Venchur kapital va startaplarni moliyalashtirish bosqichlari boʻyicha 3 guruhli interaktiv taʼlim oʻyinlari.
 
-Oʻynash: https://javohir877.github.io/startap-sayohati/
+- 💰 **Venchur Shou** (oddiy viktorina, 100–500 ball): https://javohir877.github.io/startap-sayohati/shou.html
+- 🚀 **Startap Sayohati** (simulyatsiya): https://javohir877.github.io/startap-sayohati/

@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Venchur Shou</title>
+<style>
+:root{
+  --bg:#f4f5fb; --card:#ffffff; --ink:#1b1f33; --muted:#5b6280; --line:#e0e3ee;
+  --accent:#4f46e5; --accent-ink:#fff; --accent-soft:#ebe9fd;
+  --good:#15803d; --good-soft:#e2f5e8; --bad:#b91c1c; --bad-soft:#fde6e6; --warn:#b45309; --warn-soft:#fef1dd;
+  --cell:#3730a3; --cell-ink:#fde68a; --shadow:0 2px 12px rgba(20,25,60,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#10121b; --card:#1a1d2a; --ink:#e9ebf5; --muted:#9ba2bf; --line:#2c3044;
+    --accent:#8b85ff; --accent-ink:#10121b; --accent-soft:#29274d;
+    --good:#4ade80; --good-soft:#15301f; --bad:#f87171; --bad-soft:#3a191c; --warn:#fbbf24; --warn-soft:#3a2c10;
+    --cell:#312e81; --cell-ink:#fde68a; --shadow:0 2px 12px rgba(0,0,0,.4);
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:10px 16px;position:sticky;top:0;z-index:5}
+.hrow{max-width:1150px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:20px} .logo span{color:var(--accent)}
+.tools{display:flex;gap:6px}
+.teams{max-width:1150px;margin:10px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.teams:empty{display:none}
+@media (max-width:680px){.teams{grid-template-columns:1fr}}
+.team{border:3px solid var(--line);border-radius:14px;padding:8px 12px;background:var(--bg);display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .2s;min-width:0}
+.team.now{background:var(--card);box-shadow:var(--shadow);transform:translateY(-2px)}
+.team .tinfo{min-width:0;flex:1}
+.team .tn{font-weight:800;font-size:18px;display:flex;align-items:center;gap:6px;min-width:0}
+.team .tn em{font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team .sc,.team .adj{flex:none}
+.team .tn i{width:14px;height:14px;border-radius:50%;flex:none}
+.team .tm{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team .now-l{font-size:12px;font-weight:700;color:var(--good)}
+.team .sc{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
+.team .adj{display:flex;flex-direction:column;gap:2px}
+.team .adj button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;font-size:11px;padding:0 6px;cursor:pointer}
+main{max-width:1150px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:var(--shadow)}
+h1{font-size:32px;margin:0 0 8px;line-height:1.2} h2{font-size:24px;margin:0 0 8px} h3{margin:0 0 6px}
+p{margin:8px 0}
+.muted{color:var(--muted)}
+.tag{display:inline-block;font-size:13px;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:12px;padding:12px 22px;font:inherit;font-weight:700;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.sm{padding:6px 12px;font-size:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:18px}
+input[type=text]{font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.setup{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:14px}
+.setup .g{border:3px solid;border-radius:14px;padding:12px;display:grid;gap:8px}
+.setup label{font-size:13px;color:var(--muted)}
+/* taxta */
+.bwrap{overflow-x:auto}
+.board{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;min-width:620px}
+.cat{background:var(--accent);color:var(--accent-ink);border-radius:12px;padding:10px 6px;text-align:center;font-weight:800;font-size:15px;line-height:1.25;display:flex;flex-direction:column;justify-content:center;min-height:74px}
+.cat span{font-size:26px}
+.cellb{background:var(--cell);color:var(--cell-ink);border:0;border-radius:12px;font:inherit;font-size:30px;font-weight:800;min-height:86px;cursor:pointer;transition:transform .12s, box-shadow .12s;box-shadow:inset 0 -4px 0 rgba(0,0,0,.25)}
+.cellb:hover{transform:scale(1.05)}
+.cellb.used{background:var(--bg);color:var(--muted);font-size:14px;cursor:default;box-shadow:none;transform:none;border:1px dashed var(--line)}
+.legendb{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;margin-top:12px;color:var(--muted)}
+/* savol */
+.qhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.qtext{font-size:28px;font-weight:700;line-height:1.3;margin:14px 0}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.opts{grid-template-columns:1fr}}
+.opt{text-align:left;border:3px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:16px;font:inherit;font-size:19px;font-weight:600;cursor:pointer;transition:all .12s}
+.opt:hover:not(:disabled){border-color:var(--accent);transform:translateY(-2px)}
+.opt b{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--accent-soft);color:var(--accent);margin-right:8px}
+.opt.correct{border-color:var(--good);background:var(--good-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);text-decoration:line-through}
+.opt:disabled{cursor:default}
+.timer{height:10px;border-radius:99px;background:var(--bg);overflow:hidden}
+.timer div{height:100%;background:var(--good);transition:width 1s linear,background .3s}
+.box{border-radius:12px;padding:14px 16px;margin:14px 0;font-size:17px}
+.box.good{background:var(--good-soft)} .box.bad{background:var(--bad-soft)} .box.warn{background:var(--warn-soft)} .box.note{background:var(--accent-soft)}
+.splash{text-align:center;padding:30px 10px}
+.splash .e{font-size:90px;animation:pop .5s ease}
+@keyframes pop{0%{transform:scale(.2)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+/* dars */
+.slide{text-align:center;max-width:780px;margin:0 auto}
+.slide .e{font-size:72px;line-height:1}
+.slide p{font-size:20px}
+.dots{display:flex;gap:6px;justify-content:center;margin-top:14px}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--line)} .dots i.on{background:var(--accent)}
+.tree{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:18px 0;text-align:center}
+@media (max-width:700px){.tree{grid-template-columns:repeat(3,1fr)}}
+.tree div{background:var(--bg);border-radius:12px;padding:10px 6px;font-size:14px}
+.tree div span{font-size:34px;display:block}
+.tree div b{display:block;font-size:15px}
+.pie{border-radius:50%;margin:10px auto;transition:all .6s;box-shadow:var(--shadow)}
+.formula{font-size:22px;font-weight:700;background:var(--bg);border-radius:12px;padding:14px;margin:12px 0}
+/* final */
+.bet{display:grid;grid-template-columns:180px 1fr 90px;gap:10px;align-items:center;margin:10px 0}
+@media (max-width:600px){.bet{grid-template-columns:1fr}}
+.bet input{width:100%}
+.fpick{display:flex;gap:6px;flex-wrap:wrap}
+.fpick button{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:6px 14px;font:inherit;font-weight:700;cursor:pointer}
+.fpick button.sel{border-color:var(--accent);background:var(--accent-soft)}
+.podium{display:grid;gap:12px;margin:18px 0}
+.podium .p{display:flex;align-items:center;gap:14px;border:3px solid var(--line);border-radius:14px;padding:14px 18px}
+.podium .p.win{border-color:var(--good);background:var(--good-soft)}
+.podium .m{font-size:40px} .podium .pn{font-weight:800;font-size:22px} .podium .pv{margin-left:auto;font-size:30px;font-weight:800}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;padding:30px 16px;overflow-y:auto;z-index:20}
+.modal.open{display:flex} .modal .card{max-width:760px;width:100%}
+.gl dt{font-weight:700;margin-top:10px} .gl dd{margin:2px 0 0;color:var(--muted)}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
+.fade{animation:f .3s ease} @keyframes f{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow">
+    <div class="logo">💰 Venchur <span>Shou</span></div>
+    <div class="tools">
+      <button class="btn ghost sm" onclick="openModal('mGloss')">📖 Lugʻat</button>
+      <button class="btn ghost sm" id="snd" onclick="toggleSound()" title="Ovoz">🔊</button>
+    </div>
+  </div>
+  <div class="teams" id="teams"></div>
+</header>
+<main><div class="card fade" id="screen"></div></main>
+
+<div class="modal" id="mGloss" onclick="if(event.target===this)this.classList.remove('open')"><div class="card">
+  <div class="row" style="margin:0;justify-content:space-between"><h2>📖 Oddiy lugʻat</h2><button class="btn ghost sm" onclick="$('mGloss').classList.remove('open')">✕</button></div>
+  <dl class="gl" id="gloss"></dl>
+</div></div>
+
+<script>
+/* ===================== MA'LUMOTLAR ===================== */
+const TEAM_COLORS = ["#2563eb","#e11d48","#059669"];
+const DEF_NAMES = ["Lochinlar","Burgutlar","Shunqorlar"];
+
+const GLOSSARY = [
+  ["Startap","Tez oʻsishni maqsad qilgan yangi, kichik kompaniya."],
+  ["Venchur kapital","Investor startapga pul beradi, evaziga kompaniyadan ulush (boʻlak) oladi. Xavfli, lekin daromadi katta boʻlishi mumkin."],
+  ["Ulush","Kompaniyaning sizga tegishli qismi (foizda). Pitsaning boʻlagi kabi."],
+  ["FFF","Friends, Family, Fools — doʻstlar, oila va 'telbalar': birinchi pul beradiganlar."],
+  ["Biznes-farishta","Oʻz shaxsiy pulini startapga tikadigan tajribali odam."],
+  ["Akselerator","Startapga kichik pul + mentorlik beradigan 3 oylik dastur."],
+  ["MVP","Mahsulotning eng sodda, lekin ishlaydigan birinchi versiyasi."],
+  ["Pre-money","Investitsiyadan OLDINGI kompaniya qiymati."],
+  ["Post-money","Investitsiyadan KEYINGI qiymat = Pre-money + Investitsiya."],
+  ["Suyultirish","Yangi investor kirganda sizning ulush foizingiz kamayishi."],
+  ["ESOP","Xodimlar uchun ajratilgan aksiyalar ulushi."],
+  ["Down round","Yangi baholash oldingisidan past boʻlgan raund."],
+  ["Imtiyoz (2x)","Sotuvda investor boshqalardan oldin qoʻygan pulining 2 baravarini oladi."],
+  ["IPO","Kompaniya aksiyalarini birjada hammaga sotish."],
+  ["M&A","Kompaniyani boshqa yirik kompaniya sotib olishi."],
+  ["Unicorn 🦄","1 mlrd dollardan qimmat baholangan startap."],
+  ["Pivot","Mijozlardan oʻrganib, mahsulot yoki strategiya yoʻnalishini oʻzgartirish."],
+  ["LTV / CAC","Mijozdan olinadigan jami foyda ÷ uni jalb qilish xarajati. 3 va undan yuqori — yaxshi."],
+  ["Runway","Pul necha oyga yetishi: Kassa ÷ oylik xarajat (burn rate)."],
+  ["Pro-rata huquqi","Investorning keyingi raundlarda ulushini saqlab qolish uchun yana pul qoʻyish huquqi."],
+  ["Lock-up","IPO dan keyin asoschi va investorlar aksiyani sota olmaydigan davr (odatda 6 oy)."]
+];
+
+/* Kategoriyalar: har birida 100–500 ballik savol, ball oshgan sari qiyinlashadi. a — toʻgʻri javob indeksi */
+const TF = ["✔ Toʻgʻri","✘ Notoʻgʻri"];
+const CATS = [
+  {name:"Pre-seed", icon:"💡", qs:[
+    {q:"Startapga eng birinchi pul odatda kimdan keladi?", o:["Bankdan","Doʻstlar va oiladan (FFF)","Birjadan","Soliq idorasidan"], a:1,
+     ex:"Hali hech narsa isbotlanmagan, shuning uchun faqat sizga shaxsan ishonadiganlar — doʻstlar va oila (FFF) pul beradi."},
+    {q:"Pre-seed bosqichida investor asosan JAMOAga qaraydi, chunki hali daromad yoʻq.", o:TF, a:0, tf:true,
+     ex:"Toʻgʻri! Gʻoya bosqichida raqamlar yoʻq, shuning uchun investor 'bu odamlar buni uddalay oladimi?' degan savolga javob izlaydi."},
+    {q:"Airbnb, Dropbox va Stripe — uchalasi ham qaysi mashhur akseleratordan chiqqan?", o:["Y Combinator","Google","Harvard universiteti","NASA"], a:0,
+     ex:"Y Combinator — dunyodagi eng mashhur akselerator. Startapga kichik pul + 3 oylik mentorlik beradi, evaziga kichik ulush oladi."},
+    {q:"2008-yilda pul tugab qolganda Airbnb asoschilari kompaniyani saqlab qolish uchun nima sotishgan?", o:["Oʻz mashinalarini","Saylov mavzusidagi nonushta yormasi (sereal) qutilarini","Eski kiyimlarni","Kompaniyaning yarmini"], a:1,
+     ex:"Ular 'Obama O's' va 'Cap'n McCain's' nomli sereal qutilarini sotib, ~$30 ming topishgan. Bu ijodkorlik Y Combinator'ni ham hayratga solgan!"},
+    {q:"SAFE va konvertatsiyalanuvchi qarzning (convertible note) asosiy farqi nimada?", o:["SAFE — qarz emas: foizi ham, qaytarish muddati ham yoʻq","SAFE — bank krediti, note esa grant","Ikkalasi ham bir xil narsa","Note faqat davlat startaplari uchun"], a:0,
+     ex:"Ikkalasi ham keyingi raundda ulushga aylanadi. Lekin convertible note — bu qarz (foiz va muddat bor), SAFE esa oddiyroq kelishuv (Y Combinator, 2013)."}
+  ]},
+  {name:"Seed", icon:"🌱", qs:[
+    {q:"'Seed' soʻzi oʻzbek tilida nimani anglatadi?", o:["Urugʻ","Daraxt","Meva","Bozor"], a:0,
+     ex:"Seed — urugʻ. Bu bosqichda startapga 'urugʻ' ekiladi: mahsulot yaratiladi va birinchi mijozlar topiladi."},
+    {q:"MVP nima?", o:["Eng qimmat mahsulot","Mahsulotning eng sodda, ishlaydigan birinchi versiyasi","Eng yaxshi xodim","Reklama rejasi"], a:1,
+     ex:"MVP — Minimum Viable Product. Avval sodda versiyani chiqarib, mijozlar fikrini olish kerak, keyin yaxshilash."},
+    {q:"Instagram dastlab qanday ilova boʻlgan?", o:["Musiqa pleyeri","Taksi chaqirish ilovasi","'Burbn' — joylashuvni belgilash ilovasi","Onlayn oʻyin"], a:2,
+     ex:"Foydalanuvchilar Burbn'dagi faqat rasm funksiyasini yoqtirgan. Jamoa qolganini olib tashlab, 'pivot' qildi — shunday Instagram tugʻildi."},
+    {q:"Tadqiqotlarga koʻra, startaplar yopilishining eng koʻp uchraydigan sabablaridan biri nima?", o:["Ofis juda kichik boʻlgani","Logotip yoqmagani","Bozorga kerak boʻlmagan mahsulot yaratilgani","Mijozlar juda koʻp boʻlgani"], a:2,
+     ex:"CB Insights tadqiqotlarida eng koʻp sabablar — pul tugashi va 'bozorga kerak boʻlmagan mahsulot'. Shuning uchun avval mijozni tinglash kerak."},
+    {q:"Mahsulot-bozor mosligini (PMF) tekshiruvchi 'Sean Ellis testi'da mijozlardan nima soʻraladi?", o:["'Narx qimmatmi?'","'Agar bu mahsulot yoʻqolsa, qanchalik xafa boʻlardingiz?'","'Logotip yoqadimi?'","'Necha yoshdasiz?'"], a:1,
+     ex:"Agar mijozlarning 40% dan koʻpi 'juda xafa boʻlardim' desa — PMF bor deb hisoblanadi. Bu Seed bosqichining asosiy maqsadi."}
+  ]},
+  {name:"Series A", icon:"📈", qs:[
+    {q:"Series A bosqichida asosan venchur fondlar pul beradi.", o:TF, a:0, tf:true,
+     ex:"Toʻgʻri! Series A — professional venchur fondlar kirib keladigan birinchi katta raund ($2–15 mln)."},
+    {q:"Series A pulini olish uchun eng muhim narsa nima?", o:["Chiroyli ofis","Mahsulot bozorga kerakligini isbotlash (mijozlar va daromad oʻsishi)","Koʻp xodim","Katta reklama"], a:1,
+     ex:"Investor 'mijozlar bu mahsulotni rostdan ham xohlayaptimi?' deb soʻraydi. Oʻsib borayotgan daromad — eng yaxshi isbot."},
+    {q:"ESOP nima?", o:["Xodimlar uchun ajratilgan aksiyalar ulushi","Kredit turi","Soliq turi","Investorning ismi"], a:0,
+     ex:"Startap katta maosh bera olmaydi, shuning uchun yaxshi xodimlarga kompaniyadan ulush va'da qiladi (odatda 10–20%)."},
+    {q:"Bitta mijoz kompaniyaga jami $300 foyda keltiradi (LTV), uni jalb qilish $100 turadi (CAC). Bu biznes haqida nima deyish mumkin?", o:["Zarar koʻryapti","Sogʻlom: LTV/CAC = 3","Darhol yopish kerak","Mijozlar juda qimmat"], a:1,
+     ex:"LTV/CAC = 300 ÷ 100 = 3. Investorlar uchun 3 va undan yuqori — sogʻlom biznes belgisi. 1 dan kam boʻlsa, har yangi mijoz zarar keltiradi."},
+    {q:"Term sheet'dagi 'pro-rata huquqi' nimani anglatadi?", o:["Investor asoschini ishdan boʻshata oladi","Investor keyingi raundlarda ulushini saqlab qolish uchun yana pul qoʻyish huquqiga ega","Investor har yili dividend oladi","Investor kompaniyani sotishga majburlay oladi"], a:1,
+     ex:"Masalan, investorda 10% bor. Keyingi raundda u yana pul qoʻyib, ulushini 10% da saqlab qolishi mumkin — suyultirishdan himoya."}
+  ]},
+  {name:"Series B / C", icon:"🌍", qs:[
+    {q:"Series B ning asosiy maqsadi nima?", o:["Kompaniyani yopish","Kengayish: yangi shahar va davlatlarga chiqish","Gʻoya topish","Birinchi mijozni topish"], a:1,
+     ex:"Biznes ishlayapti — endi uni kattalashtirish kerak: yangi bozorlar, koʻproq xodim, kuchliroq mahsulot."},
+    {q:"Har bir yangi raundda asoschining ulush FOIZI odatda kamayadi.", o:TF, a:0, tf:true,
+     ex:"Toʻgʻri! Bu suyultirish deyiladi. Lekin pitsa (kompaniya) kattalashgani uchun boʻlagingiz qiymati odatda oshadi."},
+    {q:"'Down round' nima?", o:["Yangi baholash oldingisidan PAST boʻlgan raund","Oxirgi raund","Eng katta raund","Bepul pul"], a:0,
+     ex:"Masalan, oʻtgan yili kompaniya $100 mln turgan, endi $70 mln ga baholanyapti. Bu yomon belgi va asoschilarni kuchli suyultiradi."},
+    {q:"Kompaniya oyiga $2 mln sarflaydi (burn rate), kassada $30 mln bor. Pul necha oyga yetadi (runway)?", o:["6 oy","15 oy","30 oy","60 oy"], a:1,
+     ex:"Runway = Kassa ÷ Burn rate = 30 ÷ 2 = 15 oy. Yangi raund 6–9 oy olishi mumkin, shuning uchun kamida 18–24 oylik zaxira tavsiya qilinadi."},
+    {q:"Investor $10 mln ni '2x imtiyoz' bilan qoʻygan. Kompaniya atigi $15 mln ga sotildi. Asoschilar va boshqalarga qancha qoladi?", o:["$0","$5 mln","$10 mln","$15 mln"], a:0,
+     ex:"2x imtiyoz — investor avval 10 × 2 = $20 mln olishi kerak. Lekin sotuv atigi $15 mln — hammasi investorga ketadi, asoschilarga $0! Shuning uchun shartlarni diqqat bilan oʻqing."}
+  ]},
+  {name:"Exit", icon:"🏆", qs:[
+    {q:"IPO nima?", o:["Kompaniya aksiyalarini birjada hammaga sotish","Yangi mahsulot chiqarish","Kompaniyani yopish","Xodim yollash"], a:0,
+     ex:"IPO dan keyin har kim birjada kompaniya aksiyasini sotib olishi mumkin. Asoschi va investorlar shu yoʻl bilan daromad oladi."},
+    {q:"2012-yilda Facebook Instagram'ni sotib oldi. Bu qanday exit turi?", o:["IPO","M&A (sotib olinish)","Bankrotlik","Seed raund"], a:1,
+     ex:"M&A — Mergers & Acquisitions. Facebook ~$1 mlrd toʻlagan, oʻsha paytda Instagram'da atigi 13 ta xodim ishlagan!"},
+    {q:"'Unicorn' (yagona shox) qanday startap?", o:["Birinchi yili foyda qilgan","1 mlrd dollardan qimmat baholangan startap","Faqat 1 ta xodimi bor","Davlatga tegishli"], a:1,
+     ex:"Unicorn juda kam uchraydi, xuddi afsonaviy yagona shox kabi. Atamani 2013-yilda investor Aileen Lee kiritgan."},
+    {q:"2014-yilda Facebook WhatsApp'ni taxminan qancha pulga sotib olgan?", o:["$100 mln","$1 mlrd","$19 mlrd","$500 mlrd"], a:2,
+     ex:"~$19 mlrd! Oʻsha paytda WhatsApp'da atigi ~55 xodim boʻlgan. Bu tarixdagi eng yirik startap xaridlaridan biri."},
+    {q:"IPO'dan keyingi 'lock-up' davri nima?", o:["Birja yopiq boʻladigan kunlar","Asoschi va investorlar aksiyalarni maʼlum muddat (odatda 6 oy) sota olmaydigan davr","Kompaniya hisobotlarni yashiradigan davr","Soliq toʻlanmaydigan davr"], a:1,
+     ex:"Lock-up aksiya narxini barqaror ushlab turadi: aks holda IPO kuni hamma birdan sotib, narxni qulatishi mumkin."}
+  ]},
+  {name:"Hisob-kitob", icon:"🧮", qs:[
+    {q:"Kompaniya $4 mln turadi (pre-money). Investor $1 mln qoʻydi. Post-money qancha?", o:["$3 mln","$4 mln","$5 mln","$1 mln"], a:2,
+     ex:"Post-money = Pre-money + Investitsiya = 4 + 1 = $5 mln."},
+    {q:"Post-money $10 mln. Investor $2 mln qoʻygan. Investor ulushi necha foiz?", o:["10%","20%","25%","50%"], a:1,
+     ex:"Investor ulushi = Investitsiya ÷ Post-money = 2 ÷ 10 = 20%."},
+    {q:"Sizda 50% ulush bor edi. Yangi investor kompaniyaning 20% ini oldi. Endi sizda qancha?", o:["50%","30%","40%","70%"], a:2,
+     ex:"Hamma ulushi 20% ga 'kichrayadi': 50% × (1 − 0,20) = 40%. 50 − 20 = 30 deb hisoblash — keng tarqalgan xato!"},
+    {q:"Pre-money $6 mln. Investor $2 mln qoʻydi. Investor ulushi necha foiz?", o:["33%","20%","25%","30%"], a:2,
+     ex:"Tuzoq! 2 ÷ 6 = 33% emas. Avval post-money: 6 + 2 = $8 mln. Keyin 2 ÷ 8 = 25%."},
+    {q:"Sizda 60% ulush. Seed raundda 20% berdingiz, Series A da yana 25% berdingiz. Endi necha foiz?", o:["15%","36%","40%","45%"], a:1,
+     ex:"60% × 0,80 = 48%, keyin 48% × 0,75 = 36%. 60 − 20 − 25 = 15% deb ayirish notoʻgʻri — har raund qolgan ulushni foizda kamaytiradi."}
+  ]}
+];
+
+const FINAL_Q = {q:"Asoschida 60% ulush bor. Kompaniya pre-money $8 mln baholandi va investor $2 mln qoʻydi. Raunddan keyin asoschi ulushining QIYMATI qancha?",
+  o:["$6 mln","$4,8 mln","$4 mln","$8 mln"], a:1,
+  ex:"Post-money = 8 + 2 = $10 mln. Investor ulushi = 2 ÷ 10 = 20%. Asoschi: 60% × 0,8 = 48%. Qiymati: 48% × $10 mln = $4,8 mln (raunddan oldin 60% × 8 = $4,8 mln edi — pul kompaniyaga kirdi, asoschi boyligi oʻzgarmadi)."};
+
+/* ===================== HOLAT ===================== */
+let teams=[], cur=0, used={}, specials={}, Q=null, timer=null, soundOn=true, actx=null, slide=0, pizzaStep=0, F=null;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const tdot = t => `<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${t.color};margin-right:6px"></span>`;
+
+function show(html){ const el=$("screen"); el.classList.remove("fade"); void el.offsetWidth; el.classList.add("fade"); el.innerHTML=html; renderTeams(); window.scrollTo({top:0,behavior:"smooth"}); }
+function renderTeams(){
+  $("teams").innerHTML = teams.map((t,i)=>`<div class="team ${i===cur?'now':''}" style="border-color:${i===cur?t.color:'var(--line)'}" onclick="setCur(${i})" title="Navbatni shu guruhga berish">
+    <div class="tinfo"><div class="tn"><i style="background:${t.color}"></i><em title="${esc(t.name)}">${esc(t.name)}</em></div>
+      ${t.members?`<div class="tm" title="${esc(t.members)}">👥 ${esc(t.members)}</div>`:""}
+      ${i===cur?`<div class="now-l">● navbatda</div>`:""}</div>
+    <div class="sc" style="color:${t.color}">${t.score}</div>
+    <div class="adj"><button onclick="event.stopPropagation();adj(${i},50)">+50</button><button onclick="event.stopPropagation();adj(${i},-50)">−50</button></div></div>`).join("");
+}
+function setCur(i){ if (Q && !Q.done) return; cur=i; renderTeams(); }
+function adj(i,d){ teams[i].score+=d; renderTeams(); }
+
+/* ===================== BOSH SAHIFA ===================== */
+function home(){
+  teams=[]; cur=0;
+  show(`<span class="tag">3 guruh uchun interaktiv viktorina</span>
+    <h1>💰 Venchur Shou</h1>
+    <p>Startaplar qanday qilib pul topadi? Venchur kapital nima? Kompaniya qanday qilib "unicorn"ga aylanadi? Bularni <b>oʻyin orqali</b> oʻrganamiz!</p>
+    <div class="box note">📋 <b>Qoidalar oddiy:</b><br>
+      1️⃣ Guruhlar navbat bilan taxtadan katak tanlaydi: <b>100 dan 500 gacha</b>. Ball qancha katta boʻlsa, savol shuncha qiyin! ⭐→⭐⭐⭐⭐⭐<br>
+      2️⃣ Savolga <b>20–40 soniya</b> beriladi (qiyin savolga koʻproq vaqt). Toʻgʻri boʻlsa, ball sizniki!<br>
+      3️⃣ Notoʻgʻri boʻlsa, boshqa guruh javobni <b>"oʻgʻirlashi"</b> mumkin (yarim ball).<br>
+      4️⃣ Yashirin kataklar bor: 🎁 <b>ikki baravar ball</b> va 💣 <b>xavf</b> (xato boʻlsa, ball ayiriladi).<br>
+      5️⃣ Oxirida 💼 <b>Investor raundi</b>: guruhlar ballarini tikadi!</div>
+    <h3 style="margin-top:16px">👥 Guruhlarni kiriting</h3>
+    <div class="setup">${[0,1,2].map(i=>`<div class="g" style="border-color:${TEAM_COLORS[i]}">
+      <b style="color:${TEAM_COLORS[i]}">${i+1}-guruh</b>
+      <label>Guruh nomi<input type="text" id="gn${i}" maxlength="22" placeholder="${DEF_NAMES[i]}"></label>
+      <label>Aʼzolar ismi (vergul bilan)<input type="text" id="gm${i}" maxlength="120" placeholder="Ali, Malika, Sardor"></label></div>`).join("")}</div>
+    <div class="row"><button class="btn" onclick="begin(true)">📚 Avval qisqa dars (2 daqiqa)</button><button class="btn ghost" onclick="begin(false)">Toʻgʻridan-toʻgʻri oʻyinga ▶</button></div>`);
+}
+function begin(withLesson){
+  teams=[0,1,2].map(i=>({name:$("gn"+i).value.trim()||DEF_NAMES[i], members:$("gm"+i).value.trim(), color:TEAM_COLORS[i], score:0}));
+  cur=0; used={}; specials={};
+  // yashirin kataklar: 2 ta 🎁 va 2 ta 💣
+  const keys=[]; CATS.forEach((c,ci)=>c.qs.forEach((q,ri)=>keys.push(ci+"-"+ri)));
+  keys.sort(()=>Math.random()-.5);
+  keys.slice(0,3).forEach(k=>specials[k]="x2"); keys.slice(3,6).forEach(k=>specials[k]="risk");
+  if (withLesson){ slide=0; pizzaStep=0; lesson(); } else board();
+}
+
+/* ===================== QISQA DARS ===================== */
+const PIZZA = [
+  {l:"Boshida", you:100, val:0.1, txt:"Kompaniya butunlay sizniki, lekin u kichkina: $100 ming."},
+  {l:"Seed raund", you:80, val:2, txt:"Farishta $400 ming berib 20% oldi. Ulushingiz 80% ga tushdi, lekin kompaniya $2 mln boʻldi!"},
+  {l:"Series A", you:60, val:10, txt:"Fond 25% oldi. Sizda 60% qoldi, kompaniya esa $10 mln!"},
+  {l:"Series B", you:48, val:50, txt:"Yana 20% berdingiz. Sizda 48% — lekin kompaniya $50 mln turadi!"}
+];
+function pizzaHTML(){
+  const p=PIZZA[pizzaStep], size=110+pizzaStep*55;
+  const mine = p.val*p.you/100;
+  return `<div class="pie" style="width:${size}px;height:${size}px;background:conic-gradient(#f59e0b 0 ${p.you}%, #94a3b8 ${p.you}% 100%)"></div>
+    <p><b>${p.l}:</b> ${p.txt}</p>
+    <div class="formula">🟠 Sizning boʻlagingiz: ${p.you}% · qiymati <span style="color:var(--good)">$${mine>=1?mine.toFixed(1)+" mln":Math.round(mine*1000)+" ming"}</span></div>
+    <div class="row" style="justify-content:center;margin-top:8px">${PIZZA.map((x,i)=>`<button class="btn sm ${i===pizzaStep?'':'ghost'}" onclick="pizzaStep=${i};lesson()">${x.l}</button>`).join("")}</div>`;
+}
+const SLIDES = [
+  ()=>`<div class="e">🚀</div><h1>Startap nima?</h1><p>Startap — <b>tez oʻsishni</b> maqsad qilgan yangi kompaniya. Odatda yangi texnologiya yoki yangi gʻoyaga asoslanadi.</p><p class="muted">Misollar: Uzum, Payme, Express24, Click.</p>`,
+  ()=>`<div class="e">💰</div><h1>Venchur kapital nima?</h1><p>Investor startapga <b>pul</b> beradi, evaziga kompaniyadan <b>ulush</b> (boʻlak) oladi.</p><p>Bu juda <b>xavfli</b>: 10 ta startapdan 6–7 tasi yopiladi. Lekin 1 tasi "uchib ketsa", qolgan hamma zararni qoplaydi!</p>`,
+  ()=>`<div class="e">🌳</div><h1>Bosqichlar — daraxt oʻsishi kabi</h1>
+     <div class="tree">
+       <div><span>💡</span><b>Pre-seed</b>Gʻoya<br>$10–500 ming</div>
+       <div><span>🌱</span><b>Seed</b>Urugʻ, birinchi mahsulot<br>$0,5–3 mln</div>
+       <div><span>🌿</span><b>Series A</b>Nihol, isbotlangan biznes<br>$2–15 mln</div>
+       <div><span>🌳</span><b>Series B</b>Daraxt, kengayish<br>$10–60 mln</div>
+       <div><span>🏙️</span><b>Series C</b>Katta kompaniya<br>$30 mln +</div>
+       <div><span>🍎</span><b>Exit</b>Meva: IPO yoki sotish</div>
+     </div><p class="muted">Har bosqichda pul koʻpayadi, investorlar ham "kattalashadi": doʻstlar → farishtalar → fondlar → birja.</p>`,
+  ()=>`<div class="e">🍕</div><h1>Pitsa misoli: ulush</h1><p class="muted">Tugmalarni bosing va pitsaga qarang: <b>boʻlagingiz foizi kichrayadi</b>, lekin <b>pitsa kattalashadi</b>!</p>${pizzaHTML()}`,
+  ()=>`<div class="e">🧮</div><h1>Ikki muhim formula</h1>
+     <div class="formula">Post-money = Pre-money + Investitsiya</div>
+     <div class="formula">Investor ulushi = Investitsiya ÷ Post-money</div>
+     <p>Misol: kompaniya <b>$4 mln</b> turadi, investor <b>$1 mln</b> qoʻydi →<br>post-money <b>$5 mln</b>, investor ulushi 1 ÷ 5 = <b>20%</b></p>`,
+  ()=>`<div class="e">🏆</div><h1>Exit — hosilni yigʻish</h1><p>Oxirida hamma oʻz ulushini pulga aylantiradi:</p>
+     <p>🔔 <b>IPO</b> — aksiyalarni birjada sotish<br>🤝 <b>M&A</b> — kompaniyani yirik kompaniyaga sotish</p>
+     <p>Agar kompaniya <b>$1 mlrd</b> dan oshsa — u <b>Unicorn 🦄</b>!</p><p class="muted">Endi bilimlarimizni oʻyinda sinaymiz!</p>`
+];
+function lesson(){
+  show(`<div class="slide">${SLIDES[slide]()}
+    <div class="row" style="justify-content:center">
+      ${slide>0?`<button class="btn ghost" onclick="slide--;lesson()">← Orqaga</button>`:""}
+      ${slide<SLIDES.length-1?`<button class="btn" onclick="slide++;lesson()">Keyingi →</button>`:`<button class="btn" onclick="board()">🎮 Oʻyinni boshlash!</button>`}
+    </div>
+    <div class="dots">${SLIDES.map((_,i)=>`<i class="${i===slide?'on':''}"></i>`).join("")}</div></div>`);
+}
+
+/* ===================== TAXTA ===================== */
+function board(){
+  Q=null;
+  const left = CATS.reduce((n,c,ci)=>n+c.qs.filter((_,ri)=>!used[ci+"-"+ri]).length,0);
+  if (left===0) return finalIntro();
+  let cells="";
+  CATS.forEach(c=>cells+=`<div class="cat"><span>${c.icon}</span>${c.name}</div>`);
+  for (let r=0;r<5;r++) CATS.forEach((c,ci)=>{
+    const k=ci+"-"+r, u=used[k];
+    cells += u ? `<button class="cellb used" disabled>${u}</button>` : `<button class="cellb" onclick="openCell(${ci},${r})">${(r+1)*100}</button>`;
+  });
+  show(`<div class="qhead"><h2>🎯 Navbat: <span style="color:${teams[cur].color}">${esc(teams[cur].name)}</span></h2><span class="tag">Qolgan savollar: ${left}</span></div>
+    ${teams[cur].members?`<p class="muted" style="margin-top:0">👥 ${esc(teams[cur].members)}</p>`:""}
+    <div class="bwrap"><div class="board" style="margin-top:12px">${cells}</div></div>
+    <div class="legendb"><span>🎁 Yashirin ikki baravar ball</span><span>💣 Yashirin xavf</span><span>👆 Guruh kartasini bosib, navbatni oʻzgartirish mumkin</span></div>`);
+}
+function openCell(ci,r){
+  const k=ci+"-"+r, q=CATS[ci].qs[r];
+  const order=q.tf?[0,1]:[0,1,2,3].sort(()=>Math.random()-.5);
+  Q={k, ci, r, q, val:(r+1)*100, sp:specials[k], team:cur, order, phase:"main", tried:[], done:false};
+  if (Q.sp){
+    sfx(Q.sp==="x2"?"good":"bad");
+    show(`<div class="splash"><div class="e">${Q.sp==="x2"?"🎁":"💣"}</div>
+      <h1>${Q.sp==="x2"?"OMAD! Ikki baravar ball!":"XAVF katagi!"}</h1>
+      <p style="font-size:20px">${Q.sp==="x2"?`Toʻgʻri javob uchun <b>${Q.val*2}</b> ball!`:`Toʻgʻri javob — <b>+${Q.val}</b>, notoʻgʻri javob — <b>−${Q.val}</b> ball!`}</p>
+      <div class="row" style="justify-content:center"><button class="btn" onclick="question()">Savolni ochish →</button></div></div>`);
+  } else question();
+}
+function question(){
+  const c=CATS[Q.ci], t=teams[Q.team];
+  const ans = Q.phase==="main"? t : teams[Q.stealer];
+  show(`<div class="qhead"><span class="tag">${c.icon} ${c.name} · ${Q.val} ball ${Q.sp==="x2"?"🎁×2":Q.sp==="risk"?"💣":""} · ${"⭐".repeat(Q.r+1)} ${LEVELS[Q.r]}</span>
+      <span class="tag" style="background:${ans.color};color:#fff">${Q.phase==="main"?"Javob beradi":"Oʻgʻirlaydi"}: ${esc(ans.name)}</span></div>
+    <div class="qtext">${Q.q.q}</div>
+    <div class="timer"><div id="tbar" style="width:100%"></div></div>
+    <p class="muted" id="tleft" style="margin:4px 0 14px">⏱ ${qSec()} soniya</p>
+    <div class="opts" id="opts">${Q.order.map((oi,j)=>`<button class="opt" data-oi="${oi}" ${Q.tried.includes(oi)?"disabled":""} onclick="answer(${oi})"><b>${Q.q.tf?["✔","✘"][oi]:String.fromCharCode(65+j)}</b>${Q.q.tf?Q.q.o[oi].slice(2):Q.q.o[oi]}</button>`).join("")}</div>
+    <div id="res"></div>`);
+  Q.tried.forEach(oi=>document.querySelector(`[data-oi="${oi}"]`).classList.add("wrong"));
+  startTimer(qSec());
+}
+const LEVELS = ["Oson","Oʻrtacha","Qiziq","Qiyin","Juda qiyin"];
+function qSec(){ return Q.phase==="main" ? 20+Q.r*5 : 15+Q.r*3; }   // 100 ball: 20 s ... 500 ball: 40 s
+function startTimer(sec){
+  clearInterval(timer); let left=sec;
+  timer=setInterval(()=>{
+    left--; const b=$("tbar"); if(!b){clearInterval(timer);return;}
+    b.style.width=(left/sec*100)+"%"; b.style.background=left<=5?"var(--bad)":left<=10?"var(--warn)":"var(--good)";
+    $("tleft").textContent=`⏱ ${left} soniya`;
+    if(left<=5&&left>0) sfx("tick");
+    if(left<=0){ $("tleft").textContent="⏰ Vaqt tugadi!"; answer(-1); }
+  },1000);
+}
+function lockOpts(){ document.querySelectorAll("#opts .opt").forEach(b=>b.disabled=true); }
+function reveal(){ document.querySelector(`[data-oi="${Q.q.a}"]`).classList.add("correct"); }
+function answer(oi){
+  if (!Q || Q.done) return;
+  clearInterval(timer); lockOpts();
+  const ok = oi===Q.q.a;
+  if (oi>=0 && !ok) document.querySelector(`[data-oi="${oi}"]`).classList.add("wrong");
+  if (ok){
+    const who = Q.phase==="main"? Q.team : Q.stealer;
+    const pts = Q.phase==="main" ? Q.val*(Q.sp==="x2"?2:1) : Q.val/2;
+    teams[who].score += pts; reveal(); sfx("good"); finish(`<div class="box good">🎉 <b>Toʻgʻri! ${esc(teams[who].name)} +${pts} ball</b><br>💡 ${Q.q.ex}</div>`);
+    if (Q.sp==="x2") confetti();
+    return;
+  }
+  sfx("bad");
+  if (oi>=0) Q.tried.push(oi);
+  if (Q.phase==="main"){
+    let pen="";
+    if (Q.sp==="risk"){ teams[Q.team].score -= Q.val; pen=` 💣 ${esc(teams[Q.team].name)} −${Q.val} ball.`; }
+    renderTeams();
+    const others=[0,1,2].filter(i=>i!==Q.team);
+    const canSteal = Q.tried.length < Q.q.o.length-1;
+    $("res").innerHTML = `<div class="box bad">❌ <b>${oi<0?"Vaqt tugadi!":"Notoʻgʻri!"}</b>${pen}
+      ${canSteal?`<br>✋ Boshqa guruhlar javobni oʻgʻirlashi mumkin (+${Q.val/2} ball). Kim birinchi qoʻl koʻtardi?`:""}</div>
+      <div class="row">${canSteal?others.map(i=>`<button class="btn" style="background:${teams[i].color};color:#fff" onclick="steal(${i})">✋ ${esc(teams[i].name)}</button>`).join(""):""}
+      <button class="btn ghost" onclick="showAnswer()">Javobni koʻrsatish</button></div>`;
+  } else {
+    showAnswer(`❌ <b>${esc(teams[Q.stealer].name)} ham topa olmadi.</b><br>`);
+  }
+}
+function steal(i){ Q.phase="steal"; Q.stealer=i; question(); }
+function showAnswer(prefix=""){ reveal(); lockOpts(); finish(`<div class="box warn">${prefix}✅ Toʻgʻri javob: <b>${Q.q.o[Q.q.a]}</b><br>💡 ${Q.q.ex}</div>`); }
+function finish(html){
+  Q.done=true; used[Q.k]= "✔ " + (Q.sp==="x2"?"🎁":Q.sp==="risk"?"💣":"");
+  renderTeams();
+  $("res").innerHTML = html + `<div class="row"><button class="btn" onclick="nextTurn()">Taxtaga qaytish →</button></div>`;
+}
+function nextTurn(){ cur=(Q.team+1)%3; board(); }
+
+/* ===================== FINAL: INVESTOR RAUNDI ===================== */
+function finalIntro(){
+  F={bets:teams.map(t=>Math.max(0,Math.floor(t.score/2/50)*50)), picks:[null,null,null]};
+  show(`<div class="splash" style="padding-top:6px"><div class="e">💼</div><h1>Final: Investor raundi!</h1>
+    <p style="font-size:19px">Har bir guruh oʻz ballaridan qanchasini <b>tikishini</b> tanlaydi. Toʻgʻri javob — tikilgan ball qoʻshiladi, notoʻgʻri — ayiriladi. Xuddi haqiqiy investor kabi xavf qiling!</p></div>
+    ${teams.map((t,i)=>`<div class="bet"><b>${tdot(t)}${esc(t.name)}</b>
+      <input type="range" min="0" max="${Math.max(0,t.score)}" step="50" value="${F.bets[i]}" oninput="F.bets[${i}]=+this.value;$('bv${i}').textContent=this.value" ${t.score<=0?"disabled":""}>
+      <b id="bv${i}" style="text-align:right">${F.bets[i]}</b></div>`).join("")}
+    <p class="muted">Tikish boshqa guruhlarga koʻrinmasligi uchun buni navbat bilan qiling yoki qogʻozga yozib, keyin kiriting.</p>
+    <div class="row"><button class="btn" onclick="finalQ()">Savolni ochish →</button></div>`);
+}
+function finalQ(){
+  const q=FINAL_Q;
+  show(`<span class="tag">💼 Final savol</span><div class="qtext">${q.q}</div>
+    <div class="opts">${q.o.map((o,i)=>`<div class="opt" style="cursor:default"><b>${String.fromCharCode(65+i)}</b>${o}</div>`).join("")}</div>
+    <h3 style="margin-top:18px">Har bir guruh javobini tanlaydi:</h3>
+    ${teams.map((t,ti)=>`<div class="bet" style="grid-template-columns:180px 1fr"><b>${tdot(t)}${esc(t.name)}</b>
+      <div class="fpick">${q.o.map((_,i)=>`<button id="fp${ti}-${i}" onclick="fpick(${ti},${i})">${String.fromCharCode(65+i)}</button>`).join("")}</div></div>`).join("")}
+    <div class="timer" style="margin-top:12px"><div id="tbar" style="width:100%"></div></div><p class="muted" id="tleft">⏱ 45 soniya</p>
+    <div class="row"><button class="btn" onclick="finalReveal()">🔓 Natijani ochish</button></div>`);
+  clearInterval(timer); let left=45;
+  timer=setInterval(()=>{ left--; const b=$("tbar"); if(!b){clearInterval(timer);return;}
+    b.style.width=(left/45*100)+"%"; b.style.background=left<=10?"var(--bad)":"var(--good)"; $("tleft").textContent=left>0?`⏱ ${left} soniya`:"⏰ Vaqt tugadi!";
+    if(left<=5&&left>0) sfx("tick"); if(left<=0) clearInterval(timer); },1000);
+}
+function fpick(ti,i){ F.picks[ti]=i; FINAL_Q.o.forEach((_,j)=>$(`fp${ti}-${j}`).classList.toggle("sel",j===i)); }
+function finalReveal(){
+  clearInterval(timer);
+  const q=FINAL_Q;
+  const lines = teams.map((t,i)=>{
+    const ok=F.picks[i]===q.a, d=ok?F.bets[i]:-F.bets[i]; t.score+=d;
+    return `<div>${tdot(t)}<b>${esc(t.name)}</b>: ${F.picks[i]==null?"javob bermadi":String.fromCharCode(65+F.picks[i])} ${ok?"✔":"✘"} → <b style="color:${ok?'var(--good)':'var(--bad)'}">${d>=0?"+":""}${d}</b></div>`;
+  }).join("");
+  renderTeams();
+  show(`<span class="tag">💼 Final natijasi</span><h2 style="margin-top:8px">Toʻgʻri javob: ${q.o[q.a]}</h2>
+    <div class="box note">💡 ${q.ex}</div><div class="box">${lines}</div>
+    <div class="row"><button class="btn" onclick="podium()">🏆 Gʻoliblarni eʼlon qilish</button></div>`);
+}
+function podium(){
+  const order=[...teams].sort((a,b)=>b.score-a.score), med=["🥇","🥈","🥉"];
+  show(`<div class="splash" style="padding:0"><div class="e">🏆</div><h1>Gʻolib: <span style="color:${order[0].color}">${esc(order[0].name)}</span>!</h1></div>
+    <div class="podium">${order.map((t,i)=>`<div class="p ${i===0?'win':''}" style="border-left:8px solid ${t.color}"><div class="m">${med[i]}</div>
+      <div><div class="pn">${esc(t.name)}</div>${t.members?`<div class="muted">👥 ${esc(t.members)}</div>`:""}</div><div class="pv" style="color:${t.color}">${t.score}</div></div>`).join("")}</div>
+    <div class="box note"><b>💡 Bugun nimani oʻrgandik?</b><br>
+      🌱 Startap bosqichlari: Pre-seed → Seed → Series A → B → C → Exit<br>
+      💰 Investor pul beradi, evaziga ulush oladi<br>
+      🍕 Har raundda ulush foizi kamayadi, lekin "pitsa" kattalashadi<br>
+      🧮 Post-money = Pre-money + Investitsiya<br>
+      🏆 Exit: IPO yoki M&A. $1 mlrd+ — Unicorn 🦄</div>
+    <div class="row"><button class="btn" onclick="home()">🔄 Yangi oʻyin</button></div>`);
+  confetti(); sfx("win");
+}
+
+/* ===================== OVOZ VA KONFETTI ===================== */
+function toggleSound(){ soundOn=!soundOn; $("snd").textContent=soundOn?"🔊":"🔇"; }
+function sfx(kind){
+  if(!soundOn) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const notes={good:[523,659,784],bad:[300,220],tick:[880],win:[523,659,784,1047]}[kind]||[440];
+    notes.forEach((f,i)=>{ const o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime+i*.11;
+      o.type=kind==="bad"?"sawtooth":"triangle"; o.frequency.value=f;
+      g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(kind==="tick"?.05:.15,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+.25);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t+.3); });
+  }catch(e){}
+}
+function confetti(){
+  const c=document.createElement("canvas"); c.id="confetti"; document.body.appendChild(c);
+  const x=c.getContext("2d"); c.width=innerWidth; c.height=innerHeight;
+  const cols=["#2563eb","#e11d48","#059669","#f59e0b","#a855f7","#0ea5e9"];
+  const ps=Array.from({length:180},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height,vx:Math.random()*3-1.5,vy:2+Math.random()*3,r:Math.random()*6,vr:Math.random()*.4-.2,s:6+Math.random()*5,c:cols[Math.floor(Math.random()*cols.length)]}));
+  let n=0;(function loop(){ x.clearRect(0,0,c.width,c.height);
+    ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore();});
+    if(++n<260) requestAnimationFrame(loop); else c.remove(); })();
+}
+function openModal(id){ $(id).classList.add("open"); }
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") $("mGloss").classList.remove("open"); });
+$("gloss").innerHTML = GLOSSARY.map(([t,d])=>`<dt>${t}</dt><dd>${d}</dd>`).join("");
+home();
+</script>
+</body>
+</html>
